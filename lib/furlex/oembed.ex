@@ -4,7 +4,6 @@ defmodule Furlex.Oembed do
   """
 
   use GenServer
-  use HTTPoison.Base
 
   require Logger
 
@@ -16,8 +15,10 @@ defmodule Furlex.Oembed do
   """
   def fetch_providers(type \\ :soft)
   def fetch_providers(:hard) do
-    case get("/providers.json") do
-      {:ok, %{body: providers}} ->
+    case HTTPoison.get("http://oembed.com/providers.json") do
+      {:ok, %{body: body}} ->
+        {:ok, providers} = Poison.decode(body)
+
         GenServer.cast __MODULE__, {:providers, providers}
 
         {:ok, providers}
@@ -78,8 +79,6 @@ defmodule Furlex.Oembed do
     Regex.match? ~r/https?:\/\/#{host}/, provider_url
   end
 
-  defp config(key), do: Application.get_env(:furlex, __MODULE__)[key]
-
   ## GenServer callbacks
 
   def start_link(opts \\ []) do
@@ -106,9 +105,4 @@ defmodule Furlex.Oembed do
   def handle_cast({:providers, providers}, _) do
     {:noreply, providers}
   end
-
-  ## HTTPoison callbacks
-
-  def process_url(path), do: config(:host) <> path
-  def process_response_body(body), do: Poison.decode!(body)
 end

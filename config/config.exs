@@ -28,8 +28,6 @@ use Mix.Config
 # here (which is why it is important to import them last).
 #
 #     import_config "#{Mix.env}.exs"
-config :furlex, Furlex.Oembed,
-  host: "http://oembed.com"
 
 config :furlex, Furlex.Parser.Facebook,
   tags: ~w(

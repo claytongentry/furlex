@@ -3,7 +3,6 @@ defmodule Furlex.Fetcher do
   A module for fetching body data for a given url
   """
 
-  use HTTPoison.Base
   require Logger
 
   alias Furlex.Oembed
@@ -12,7 +11,7 @@ defmodule Furlex.Fetcher do
   Fetches a url and extracts the body
   """
   def fetch(url) do
-    case get(url) do
+    case HTTPoison.get(url) do
       {:ok, %{body: body}} -> {:ok, body}
       other                -> other
     end
@@ -24,7 +23,7 @@ defmodule Furlex.Fetcher do
   def fetch_oembed(url, params \\ %{"format" => "json"}) do
     with {:ok, endpoint} <- Oembed.endpoint_from_url(url, params),
          params          = Map.merge(params, %{url: url}),
-         {:ok, response} <- get(endpoint, [], params: params),
+         {:ok, response} <- HTTPoison.get(endpoint, [], params: params),
          {:ok, body}     <- Poison.decode(response.body)
     do
       {:ok, body}

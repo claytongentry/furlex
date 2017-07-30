@@ -24,7 +24,47 @@ end
 ```
 
 ## Usage
-To unfurl a url, simply pass it to `Furlex.unfurl/1`
+To unfurl a url, first configure the tags you'd like to capture under each parser (or simply copy+paste the following into your `config.exs`):
+
+```elixir
+config :furlex, Furlex.Parser.Facebook,
+  tags: ~w(
+    fb:app_id fb:pages
+
+    og:url og:title og:description og:image og:type og:locale og:video
+    og:video:url og:video:secure_url og:video:type og:video:width
+    og:video:height og:image:url og:image:secure_url og:image:type
+    og:image:width og:image:height og:audio og:determiner og:locale:alternate
+    og:site_name og:image:alt
+
+    article:published_time article:modified_time
+    article:expiration_time article:author article:section article:tag
+
+    book:author book:isbn book:release_date book:tag
+
+    profile:first_name profile:last_name profile:username profile:gender
+
+    music:duration music:album music:album:disc music:album:track
+    music:musician music:song music:song:disc music:song:track
+    music:release_date music:creator
+
+    video:actor video:actor:role video:director video:duration
+    video:release_date video:tag video:writer video:series
+  )
+
+config :furlex, Furlex.Parser.Twitter,
+  tags: ~w(
+    twitter:card twitter:site twitter:url twitter:site:id twitter:creator
+    twitter:creator:id twitter:description twitter:title twitter:image
+    twitter:image:alt twitter:player twitter:player:width twitter:player:height
+    twitter:player:stream twitter:app:name:iphone twitter:app:id:iphone
+    twitter:app:url:iphone twitter:app:name:ipad twitter:app:id:ipad
+    twitter:app:url:ipad twitter:app:name:googleplay twitter:app:url:googleplay
+    twitter:app:id:googleplay
+  )
+```
+
+Then simply pass a url to `Furlex.unfurl/1`
 
 ```elixir
 iex(1)> Furlex.unfurl "https://www.youtube.com/watch?v=Gh6H7Md_L2k"
