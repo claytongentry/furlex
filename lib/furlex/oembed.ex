@@ -86,10 +86,16 @@ defmodule Furlex.Oembed do
   end
 
   def init(:test) do
-    [__DIR__ | ~w(.. .. test fixtures providers.json)]
-    |> Path.join()
-    |> File.read!()
-    |> Poison.decode()
+    {:ok, [%{
+      "provider_name" => "23HQ",
+      "provider_url" => "http:\/\/www.23hq.com",
+      "endpoints" => [
+        %{
+          "schemes" => ["http:\/\/www.23hq.com\/*\/photo\/*"],
+          "url" => "http:\/\/www.23hq.com\/23\/oembed"
+        }
+      ]
+    }]}
   end
   def init(_) do
     case fetch_providers(:hard) do
