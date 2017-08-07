@@ -15,8 +15,8 @@ defmodule FurlexTest do
 
     assert {:ok, %Furlex{} = furlex} = Furlex.unfurl(url)
 
-    assert furlex.facebook["og:site_name"]     == "Vimeo"
-    assert furlex.twitter["twitter:title"]     == "FIDLAR - Cocaine (Feat. Nick Offerman)"
+    assert furlex.facebook["og"]["site_name"]  == "Vimeo"
+    assert furlex.twitter["twitter"]["title"]  == "FIDLAR - Cocaine (Feat. Nick Offerman)"
     assert Enum.at(furlex.json_ld, 0)["@type"] == "VideoObject"
   end
 

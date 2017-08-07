@@ -10,7 +10,8 @@ defmodule Furlex.Parser.FacebookTest do
            "content=\"www.example.com\"/></head></html>"
 
     assert {:ok, %{
-      "og:url" => "www.example.com"
-    }} == Facebook.parse(html)
+      "og" => %{
+        "url" => "www.example.com"
+    }}} == Facebook.parse(html)
   end
 end
