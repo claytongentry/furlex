@@ -29,7 +29,6 @@ use Mix.Config
 #
 #     import_config "#{Mix.env}.exs"
 
-
 config :furlex, Furlex.Parser.Facebook,
   tags: ~w(
     fb:app_id fb:pages
