@@ -10,7 +10,8 @@ defmodule Furlex.Parser.TwitterTest do
            "content=\"www.example.com\"/></head></html>"
 
      assert {:ok, %{
-       "twitter:image" => "www.example.com"
-     }} == Twitter.parse(html)
+       "twitter" => %{
+         "image" => "www.example.com"
+     }}} == Twitter.parse(html)
   end
 end
