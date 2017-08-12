@@ -1,6 +1,7 @@
 defmodule Furlex.Parser.JsonLD do
   @behaviour Furlex.Parser
 
+  @spec parse(String.t) :: nil | {:ok, List.t}
   def parse(html) do
     meta = "script[type=\"application/ld+json\"]"
 

@@ -10,6 +10,7 @@ defmodule Furlex.Fetcher do
   @doc """
   Fetches a url and extracts the body
   """
+  @spec fetch(String.t) :: {:ok, String.t} | {:error, Atom.t}
   def fetch(url) do
     case HTTPoison.get(url) do
       {:ok, %{body: body}} -> {:ok, body}
@@ -20,6 +21,7 @@ defmodule Furlex.Fetcher do
   @doc """
   Fetches oembed data for the given url
   """
+  @spec fetch_oembed(String.t, Map.t) :: {:ok, String.t} | {:ok, nil} | {:error, Atom.t}
   def fetch_oembed(url, params \\ %{"format" => "json"}) do
     with {:ok, endpoint} <- Oembed.endpoint_from_url(url, params),
          params          = Map.merge(params, %{url: url}),

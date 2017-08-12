@@ -13,6 +13,15 @@ defmodule Furlex do
 
   defstruct [:canonical_url, :oembed, :facebook, :twitter, :json_ld, :other]
 
+  @type t :: %__MODULE__{
+    canonical_url: String.t,
+    oembed: nil | Map.t,
+    facebook: Map.t,
+    twitter: Map.t,
+    json_ld: nil | List.t,
+    other: nil | Map.t
+  }
+
   def start(_type, _args) do
     import Supervisor.Spec
 
@@ -30,6 +39,7 @@ defmodule Furlex do
   unfurl/1 fetches oembed data if applicable to the given url's host,
   in addition to Twitter Card, Open Graph, JSON-LD and other HTML meta tags.
   """
+  @spec unfurl(String.t) :: {:ok, __MODULE__.t} | {:error, Atom.t}
   def unfurl(url) do
     with {:ok, body}     <- Fetcher.fetch(url),
          {:ok, oembed}   <- Fetcher.fetch_oembed(url),

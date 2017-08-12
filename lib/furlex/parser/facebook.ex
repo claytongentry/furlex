@@ -3,6 +3,7 @@ defmodule Furlex.Parser.Facebook do
 
   alias Furlex.Parser
 
+  @spec parse(String.t) :: {:ok, Map.t}
   def parse(html) do
     tags = config(:tags)
     meta = &("meta[property=\"#{&1}\"]")

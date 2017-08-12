@@ -13,6 +13,7 @@ defmodule Furlex.Oembed do
   Soft fetch will fetch cached providers. Hard fetch requests
   providers from oembed.com and purges the cache.
   """
+  @spec fetch_providers(Atom.t) :: {:ok, List.t} | {:error, Atom.t}
   def fetch_providers(type \\ :soft)
   def fetch_providers(:hard) do
     case HTTPoison.get("http://oembed.com/providers.json") do
@@ -42,6 +43,7 @@ defmodule Furlex.Oembed do
   @doc """
   Returns an Oembed endpoint for the given url
   """
+  @spec endpoint_from_url(String.t, Map.t) :: {:ok, String.t} | {:error, Atom.t}
   def endpoint_from_url(url, params \\ %{}) do
     case provider_from_url(url) do
       nil      ->

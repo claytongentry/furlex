@@ -6,15 +6,13 @@ defmodule Furlex.Parser do
   Extracts the given tags from the given raw html according to
   the given match function
 
-  ## Example
+  ## Examples
 
-    html = ```
-      <html><head><meta name="foobar" content="foobaz" /></head></html>
-    ```
-
-   Parser.extract ["foobar"], html, &("meta[name=&1]")
-   => %{"foobar" => "foobaz"}
+    iex> html = "<html><head><meta name="foobar" content="foobaz" /></head></html>"
+    iex> Parser.extract ["foobar"], html, &("meta[name=&1]")
+    %{"foobar" => "foobaz"}
   """
+  @spec extract(List.t | String.t, String.t, Function.t) :: Map.t
   def extract(tags, html, match) when is_list(tags) do
     tags
     |> Stream.map(&extract(&1, html, match))
@@ -39,6 +37,7 @@ defmodule Furlex.Parser do
   end
 
   @doc "Extracts a canonical url from the given raw HTML"
+  @spec extract_canonical(String.t) :: nil | String.t
   def extract_canonical(html) do
     case Floki.find(html, "link[rel=\"canonical\"]") do
       []       -> nil
@@ -52,18 +51,19 @@ defmodule Furlex.Parser do
   @doc """
   Groups colon-separated keys into dynamic map structures
 
-  ## Example
+  ## Examples
 
-  iex> Furlex.Parser.group_keys %{"twitter:app:id" => 123, "twitter:app:name" => "YouTube"}
-  %{
-    "twitter" => %{
-      "app" => %{
-        "id" => 123,
-        "name" => "YouTube"
+    iex> Furlex.Parser.group_keys %{"twitter:app:id" => 123, "twitter:app:name" => "YouTube"}
+    %{
+      "twitter" => %{
+        "app" => %{
+          "id" => 123,
+          "name" => "YouTube"
+        }
       }
     }
-  }
   """
+  @spec group_keys(Map.t) :: Map.t
   def group_keys(map) do
     Enum.reduce map, %{}, fn
       {_, v}, _acc when is_map(v) -> group_keys(v)
