@@ -1,6 +1,6 @@
 # Changelog
 
-## v.0.1.4
+## v.0.2.0
 * Support configuration for grouping colon-delimited keys into map structures
 * Don't require explicitly configuring OpenGraph and TwitterCard tags in your app config.
 * Enable adding custom tags under OpenGraph and TwitterCard parsers.
