@@ -1,5 +1,9 @@
 defmodule Furlex.Parser do
 
+  @doc """
+  Parses the given HTML, returning a map structure of structured
+  data keys mapping to their respective values, or an error.
+  """
   @callback parse(html : String.t) :: {:ok, Map.t} | {:error, Atom.t}
 
   @doc """
