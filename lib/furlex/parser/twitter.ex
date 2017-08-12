@@ -3,6 +3,7 @@ defmodule Furlex.Parser.Twitter do
 
   alias Furlex.Parser
 
+  @spec parse(String.t) :: {:ok, Map.t}
   def parse(html) do
     tags = config(:tags)
     meta = &("meta[name=\"#{&1}\"]")

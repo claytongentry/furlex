@@ -3,6 +3,7 @@ defmodule Furlex.Parser.HTML do
 
   alias Furlex.Parser.{Facebook, Twitter}
 
+  @spec parse(String.t) :: nil | {:ok, Map.t}
   def parse(html) do
     case Floki.find(html, "meta[name]") do
       nil      -> nil
