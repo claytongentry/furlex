@@ -21,10 +21,10 @@ defmodule Furlex.Fetcher do
   @doc """
   Fetches oembed data for the given url
   """
-  @spec fetch_oembed(String.t, Map.t) :: {:ok, String.t} | {:ok, nil} | {:error, Atom.t}
-  def fetch_oembed(url, params \\ %{"format" => "json"}) do
-    with {:ok, endpoint} <- Oembed.endpoint_from_url(url, params),
-         params           = Map.merge(params, %{url: url}),
+  @spec fetch_oembed(String.t) :: {:ok, String.t} | {:ok, nil} | {:error, Atom.t}
+  def fetch_oembed(url) do
+    with {:ok, endpoint} <- Oembed.endpoint_from_url(url),
+         params           = %{"url" => url},
          {:ok, response} <- HTTPoison.get(endpoint, [], params: params),
          {:ok, body}     <- Poison.decode(response.body)
     do

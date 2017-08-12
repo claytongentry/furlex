@@ -45,14 +45,14 @@ defmodule Furlex.Oembed do
 
   ## Examples
 
-    iex> Oembed.endpoint_from_url "http://www.23hq.com/Spelterini/photo/33636190"
-      {:ok, "http://www.23hq.com/23/oembed"}
+    iex> Oembed.endpoint_from_url "https://vimeo.com/88856141"
+    {:ok, "https://vimeo.com/api/oembed.json"}
 
-    iex> Oembed.endpoint_from_url "https://vimeo.com/88856141", %{"format" => "json"}
-      {:ok, "https://vimeo.com/api/oembed.json"}
+    iex> Oembed.endpoint_from_url "https://vimeo.com/88856141", %{"format" => "xml"}
+    {:ok, "https://vimeo.com/api/oembed.xml"}
   """
   @spec endpoint_from_url(String.t, Map.t) :: {:ok, String.t} | {:error, Atom.t}
-  def endpoint_from_url(url, params \\ %{}) do
+  def endpoint_from_url(url, params \\ %{"format" => "json"}) do
     case provider_from_url(url) do
       nil      ->
         {:error, :no_oembed_provider}
@@ -91,21 +91,24 @@ defmodule Furlex.Oembed do
 
   ## GenServer callbacks
 
+  @doc false
   def start_link(opts \\ []) do
     GenServer.start_link __MODULE__, Mix.env(), opts
   end
 
   def init(:test) do
-    {:ok, [%{
-      "provider_name" => "23HQ",
-      "provider_url" => "http:\/\/www.23hq.com",
-      "endpoints" => [
-        %{
-          "schemes" => ["http:\/\/www.23hq.com\/*\/photo\/*"],
-          "url" => "http:\/\/www.23hq.com\/23\/oembed"
-        }
-      ]
-    }]}
+    {:ok, [
+      %{
+        "provider_name" => "Vimeo",
+        "provider_url" => "https:\/\/vimeo.com\/",
+        "endpoints" => [
+          %{
+            "url" => "https:\/\/vimeo.com/api/oembed.{format}",
+            "discovery" => true
+          }
+        ]
+      }
+    ]}
   end
   def init(_) do
     case fetch_providers(:hard) do

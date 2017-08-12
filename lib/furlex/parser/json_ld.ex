@@ -6,7 +6,9 @@ defmodule Furlex.Parser.JsonLD do
     meta = "script[type=\"application/ld+json\"]"
 
     case Floki.find(html, meta) do
-      nil      -> nil
+      nil      ->
+        {:ok, []}
+
       elements ->
         json_ld =
           elements

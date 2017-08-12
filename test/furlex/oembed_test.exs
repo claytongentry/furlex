@@ -25,8 +25,12 @@ defmodule Furlex.OembedTest do
     assert {:error, :no_oembed_provider}          ==
       Oembed.endpoint_from_url("foobar")
 
-    assert {:ok, "http://www.23hq.com/23/oembed"} ==
-      Oembed.endpoint_from_url("http://www.23hq.com/Spelterini/photo/33636190")
+    url    = "https://vimeo.com/88856141"
+    params = %{"format" => "json"}
+
+    {:ok, endpoint} = Oembed.endpoint_from_url(url, params)
+
+    assert endpoint == "https://vimeo.com/api/oembed.json"
   end
 
   def handle(%{request_path: "/providers.json"} = conn) do

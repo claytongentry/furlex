@@ -18,10 +18,11 @@ defmodule Furlex do
     oembed: nil | Map.t,
     facebook: Map.t,
     twitter: Map.t,
-    json_ld: nil | List.t,
-    other: nil | Map.t
+    json_ld: List.t,
+    other: Map.t
   }
 
+  @doc false
   def start(_type, _args) do
     import Supervisor.Spec
 
