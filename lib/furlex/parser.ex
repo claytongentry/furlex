@@ -4,7 +4,7 @@ defmodule Furlex.Parser do
   Parses the given HTML, returning a map structure of structured
   data keys mapping to their respective values, or an error.
   """
-  @callback parse(html : String.t) :: {:ok, Map.t} | {:error, Atom.t}
+  @callback parse(html :: String.t) :: {:ok, Map.t} | {:error, Atom.t}
 
   @doc """
   Extracts the given tags from the given raw html according to
