@@ -24,135 +24,104 @@ end
 ```
 
 ## Usage
-To unfurl a url, first configure the tags you'd like to capture under each parser (or simply copy+paste the following into your `config.exs`):
-
-```elixir
-config :furlex, Furlex.Parser.Facebook,
-  tags: ~w(
-    fb:app_id fb:pages
-
-    og:url og:title og:description og:image og:type og:locale og:video
-    og:video:url og:video:secure_url og:video:type og:video:width
-    og:video:height og:image:url og:image:secure_url og:image:type
-    og:image:width og:image:height og:audio og:determiner og:locale:alternate
-    og:site_name og:image:alt
-
-    article:published_time article:modified_time
-    article:expiration_time article:author article:section article:tag
-
-    book:author book:isbn book:release_date book:tag
-
-    profile:first_name profile:last_name profile:username profile:gender
-
-    music:duration music:album music:album:disc music:album:track
-    music:musician music:song music:song:disc music:song:track
-    music:release_date music:creator
-
-    video:actor video:actor:role video:director video:duration
-    video:release_date video:tag video:writer video:series
-  )
-
-config :furlex, Furlex.Parser.Twitter,
-  tags: ~w(
-    twitter:card twitter:site twitter:domain twitter:url twitter:site:id
-    twitter:creator twitter:creator:id twitter:description twitter:title
-    twitter:image twitter:image:alt twitter:player twitter:player:width
-    twitter:player:height twitter:player:stream twitter:app:name:iphone
-    twitter:app:id:iphone twitter:app:url:iphone twitter:app:name:ipad
-    twitter:app:id:ipad twitter:app:url:ipad twitter:app:name:googleplay
-    twitter:app:url:googleplay twitter:app:id:googleplay
-  )
-```
-
-Then simply pass a url to `Furlex.unfurl/1`
+To unfurl a url, simply pass a url to `Furlex.unfurl/1`
 
 ```elixir
 iex(1)> Furlex.unfurl "https://www.youtube.com/watch?v=Gh6H7Md_L2k"
 {:ok,
- %Furlex{
-   canonical_url: "https://www.youtube.com/watch?v=Gh6H7Md_L2k",
-   facebook: %{
-     "fb" => %{
-       "app_id" => "87741124305"
-      },
-      "og" => %{
-        "description" => "Watch the full episode: https://www.thisoldhouse.com/watch/ask-toh-future-house-offerman Ask This Old House host Kevin O’Connor visits Nick Offerman in Los A...",
-        "image" => "https://i.ytimg.com/vi/Gh6H7Md_L2k/maxresdefault.jpg",
-        "site_name" => "YouTube",
-        "title" => "Touring Nick Offerman’s Wood Shop", "type" => "video",
-        "url" => "https://www.youtube.com/watch?v=Gh6H7Md_L2k",
-        "video" => %{
-          "height" => ["720", "720"],
-          "secure_url" => ["https://www.youtube.com/embed/Gh6H7Md_L2k",
-           "https://www.youtube.com/v/Gh6H7Md_L2k?version=3&autohide=1"],
-          "type" => ["text/html", "application/x-shockwave-flash"],
-          "url" => ["https://www.youtube.com/embed/Gh6H7Md_L2k",
-           "http://www.youtube.com/v/Gh6H7Md_L2k?version=3&autohide=1"],
-          "width" => ["1280", "1280"]
-        }
-      }
-    },
-    json_ld: [
-      %{
-        "@context" => "http://schema.org",
-        "@type" => "BreadcrumbList",
-        "itemListElement" => [
-          %{
-            "@type" => "ListItem",
-            "item" => %{
-              "@id" => "http://www.youtube.com/user/thisoldhouse",
-              "name" => "This Old House"
-            },
-            "position" => 1
-          }
-        ]
-      }
-    ],
-    oembed: %{
-      "author_name" => "This Old House",
-      "author_url" => "https://www.youtube.com/user/thisoldhouse",
-      "height" => 270,
-      "html" => "<iframe width=\"480\" height=\"270\" src=\"https://www.youtube.com/embed/Gh6H7Md_L2k?feature=oembed\" frameborder=\"0\" allowfullscreen></iframe>",
-      "provider_name" => "YouTube", "provider_url" => "https://www.youtube.com/",
-      "thumbnail_height" => 360,
-      "thumbnail_url" => "https://i.ytimg.com/vi/Gh6H7Md_L2k/hqdefault.jpg",
-      "thumbnail_width" => 480, "title" => "Touring Nick Offerman’s Wood Shop",
-      "type" => "video", "version" => "1.0", "width" => 480
-    },
-    other: %{
-      "description" => "Watch the full episode: https://www.thisoldhouse.com/watch/ask-toh-future-house-offerman Ask This Old House host Kevin O’Connor visits Nick Offerman in Los A...",
-      "keywords" => "this old house, how-to, home improvement, Episode, TV Show, DIY, Ask This Old House, Nick Offerman, Kevin O'Connor, woodworking, wood shop",
-      "theme-color" => "#e62117",
-      "title" => "Touring Nick Offerman’s Wood Shop"
-    },
-    twitter: %{
-      "twitter" => %{
-        "app" => %{
-          "id" => %{
-            "googleplay" => "com.google.android.youtube",
-            "ipad" => "544007664", "iphone" => "544007664"
-          },
-          "name" => %{
-            "googleplay" => "YouTube",
-            "ipad" => "YouTube",
-            "iphone" => "YouTube"
-          },
-          "url" => %{
-            "googleplay" => "https://www.youtube.com/watch?v=Gh6H7Md_L2k",
-            "ipad" => "vnd.youtube://www.youtube.com/watch?v=Gh6H7Md_L2k&feature=applinks",
-            "iphone" => "vnd.youtube://www.youtube.com/watch?v=Gh6H7Md_L2k&feature=applinks"
-          }
-        },
-        "card" => "player",
-        "description" => "Watch the full episode: https://www.thisoldhouse.com/watch/ask-toh-future-house-offerman Ask This Old House host Kevin O’Connor visits Nick Offerman in Los A...",
-        "image" => "https://i.ytimg.com/vi/Gh6H7Md_L2k/maxresdefault.jpg",
-        "player" => %{"height" => "720", "width" => "1280"}, "site" => "@youtube",
-        "title" => "Touring Nick Offerman’s Wood Shop",
-        "url" => "https://www.youtube.com/watch?v=Gh6H7Md_L2k"
+ %Furlex{canonical_url: "https://www.youtube.com/watch?v=Gh6H7Md_L2k",
+  facebook: %{"fb:app_id" => "87741124305",
+    "og:description" => "Watch the full episode: https://www.thisoldhouse.com/watch/ask-toh-future-house-offerman Ask This Old House host Kevin O’Connor visits Nick Offerman in Los A...",
+    "og:image" => "https://i.ytimg.com/vi/Gh6H7Md_L2k/maxresdefault.jpg",
+    "og:site_name" => "YouTube",
+    "og:title" => "Touring Nick Offerman’s Wood Shop", "og:type" => "video",
+    "og:url" => "https://www.youtube.com/watch?v=Gh6H7Md_L2k",
+    "og:video:height" => ["720", "720"],
+    "og:video:secure_url" => ["https://www.youtube.com/embed/Gh6H7Md_L2k",
+     "https://www.youtube.com/v/Gh6H7Md_L2k?version=3&autohide=1"],
+    "og:video:type" => ["text/html", "application/x-shockwave-flash"],
+    "og:video:url" => ["https://www.youtube.com/embed/Gh6H7Md_L2k",
+     "http://www.youtube.com/v/Gh6H7Md_L2k?version=3&autohide=1"],
+    "og:video:width" => ["1280", "1280"]},
+  json_ld: [%{"@context" => "http://schema.org", "@type" => "BreadcrumbList",
+     "itemListElement" => [%{"@type" => "ListItem",
+        "item" => %{"@id" => "http://www.youtube.com/user/thisoldhouse",
+          "name" => "This Old House"}, "position" => 1}]}],
+  oembed: %{"author_name" => "This Old House",
+    "author_url" => "https://www.youtube.com/user/thisoldhouse",
+    "height" => 270,
+    "html" => "<iframe width=\"480\" height=\"270\" src=\"https://www.youtube.com/embed/Gh6H7Md_L2k?feature=oembed\" frameborder=\"0\" allowfullscreen></iframe>",
+    "provider_name" => "YouTube", "provider_url" => "https://www.youtube.com/",
+    "thumbnail_height" => 360,
+    "thumbnail_url" => "https://i.ytimg.com/vi/Gh6H7Md_L2k/hqdefault.jpg",
+    "thumbnail_width" => 480, "title" => "Touring Nick Offerman’s Wood Shop",
+    "type" => "video", "version" => "1.0", "width" => 480},
+  other: %{"description" => "Watch the full episode: https://www.thisoldhouse.com/watch/ask-toh-future-house-offerman Ask This Old House host Kevin O’Connor visits Nick Offerman in Los A...",
+    "keywords" => "this old house, how-to, home improvement, Episode, TV Show, DIY, Ask This Old House, Nick Offerman, Kevin O'Connor, woodworking, wood shop",
+    "theme-color" => "#e62117",
+    "title" => "Touring Nick Offerman’s Wood Shop"},
+  twitter: %{"twitter:app:id:googleplay" => "com.google.android.youtube",
+    "twitter:app:id:ipad" => "544007664",
+    "twitter:app:id:iphone" => "544007664",
+    "twitter:app:name:googleplay" => "YouTube",
+    "twitter:app:name:ipad" => "YouTube",
+    "twitter:app:name:iphone" => "YouTube",
+    "twitter:app:url:googleplay" => "https://www.youtube.com/watch?v=Gh6H7Md_L2k",
+    "twitter:app:url:ipad" => "vnd.youtube://www.youtube.com/watch?v=Gh6H7Md_L2k&feature=applinks",
+    "twitter:app:url:iphone" => "vnd.youtube://www.youtube.com/watch?v=Gh6H7Md_L2k&feature=applinks",
+    "twitter:card" => "player",
+    "twitter:description" => "Watch the full episode: https://www.thisoldhouse.com/watch/ask-toh-future-house-offerman Ask This Old House host Kevin O’Connor visits Nick Offerman in Los A...",
+    "twitter:image" => "https://i.ytimg.com/vi/Gh6H7Md_L2k/maxresdefault.jpg",
+    "twitter:player" => "https://www.youtube.com/embed/Gh6H7Md_L2k",
+    "twitter:player:height" => "720", "twitter:player:width" => "1280",
+    "twitter:site" => "@youtube",
+    "twitter:title" => "Touring Nick Offerman’s Wood Shop",
+    "twitter:url" => "https://www.youtube.com/watch?v=Gh6H7Md_L2k"}}}
+```
+
+## Configuration
+Furlex accepts a few optional configuration parameters.
+
+You may configure additional tags to capture under the Facebook
+OpenGraph and TwitterCard parsers.
+
+```elixir
+config :furlex, Furlex.Parser.Facebook,
+  tags: ~w(my:custom:facebook:tag another:custom:facebook:tag)
+
+config :furlex, Furlex.Parser.Twitter,
+  tags: ~w(my:custom:twitter:tag)
+```
+
+You may also configure the depth of the resulting Furlex map. The `:depth` option
+takes an atom of either `:flat` (default) or `:deep`.
+
+```elixir
+config :furlex, depth: :flat
+```
+
+ `:flat` depth will return values mapped directly beneath OpenGraph and TwitterCard keys, i.e.
+ ```elixir
+ %Furlex{twitter: %{
+   "twitter:app:id:googleplay" => "com.google.android.youtube",
+   "twitter:app:id:ipad"       => "544007664",
+   "twitter:app:id:iphone"     => "544007664"
+ }}
+```
+
+`:deep` depth will return values grouped into colon-delimited map structures, i.e.
+```elixir
+%Furlex{twitter: %{
+  "twitter" => %{
+    "app" => %{
+      "id" => %{
+        "googleplay" => "com.google.android.youtube",
+        "ipad"       => "544007664",
+        "iphone"     => "544007664"
       }
     }
   }
-}
+}}
 ```
 
 ## License

@@ -6,7 +6,9 @@ defmodule Furlex.Parser.HTML do
   @spec parse(String.t) :: nil | {:ok, Map.t}
   def parse(html) do
     case Floki.find(html, "meta[name]") do
-      nil      -> nil
+      nil      ->
+        {:ok, %{}}
+
       elements ->
         content =
           elements
@@ -19,9 +21,7 @@ defmodule Furlex.Parser.HTML do
 
   # Filter out plain meta elements from Twitter, Facebook, etc.
   defp filter_other(elements) do
-    tags = tags()
-
-    Enum.reject elements, &(extract_attribute(&1, "name") in tags)
+    Enum.reject elements, &(extract_attribute(&1, "name") in other_tags())
   end
 
   defp to_map(element, acc) do
@@ -44,10 +44,7 @@ defmodule Furlex.Parser.HTML do
     end
   end
 
-  defp tags() do
-    facebook = Application.get_env(:furlex, Facebook)[:tags]
-    twitter  = Application.get_env(:furlex, Twitter)[:tags]
-
-    facebook ++ twitter
+  defp other_tags do
+    Facebook.tags ++ Twitter.tags
   end
 end
