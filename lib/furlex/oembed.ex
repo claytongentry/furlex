@@ -42,6 +42,14 @@ defmodule Furlex.Oembed do
 
   @doc """
   Returns an Oembed endpoint for the given url
+
+  ## Examples
+
+    iex> Oembed.endpoint_from_url "http://www.23hq.com/Spelterini/photo/33636190"
+      {:ok, "http://www.23hq.com/23/oembed"}
+
+    iex> Oembed.endpoint_from_url "https://vimeo.com/88856141", %{"format" => "json"}
+      {:ok, "https://vimeo.com/api/oembed.json"}
   """
   @spec endpoint_from_url(String.t, Map.t) :: {:ok, String.t} | {:error, Atom.t}
   def endpoint_from_url(url, params \\ %{}) do

@@ -1,6 +1,6 @@
 defmodule Furlex.Parser do
 
-  @callback parse(String.t) :: {:ok, Map.t} | {:error, Atom.t}
+  @callback parse(html : String.t) :: {:ok, Map.t} | {:error, Atom.t}
 
   @doc """
   Extracts the given tags from the given raw html according to
