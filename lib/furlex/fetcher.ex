@@ -10,7 +10,7 @@ defmodule Furlex.Fetcher do
   @doc """
   Fetches a url and extracts the body
   """
-  @spec fetch(String.t) :: {:ok, String.t} | {:error, Atom.t}
+  @spec fetch(String.t) :: {:ok, String.t, Integer.t} | {:error, Atom.t}
   def fetch(url) do
     case HTTPoison.get(url) do
       {:ok, %{body: body, status_code: status_code}} -> {:ok, body, status_code}
