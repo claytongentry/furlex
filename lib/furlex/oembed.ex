@@ -16,7 +16,7 @@ defmodule Furlex.Oembed do
   @spec fetch_providers(Atom.t) :: {:ok, List.t} | {:error, Atom.t}
   def fetch_providers(type \\ :soft)
   def fetch_providers(:hard) do
-    case HTTPoison.get("http://oembed.com/providers.json") do
+    case HTTPoison.get("https://oembed.com/providers.json") do
       {:ok, %{body: body}} ->
         {:ok, providers} = Poison.decode(body)
 
