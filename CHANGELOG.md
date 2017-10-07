@@ -1,5 +1,9 @@
 # Changelog
 
+## v.0.2.1
+* Add status code to %Furlex{} structure (thanks [abitdodgy](https://github.com/abitdodgy))
+* Fix compatibility with Phoenix 1.3 (thanks, again, [abitdodgy](https://github.com/abitdodgy)!)
+
 ## v.0.2.0
 * Support configuration for grouping colon-delimited keys into map structures
 * Don't require explicitly configuring OpenGraph and TwitterCard tags in your app config.
