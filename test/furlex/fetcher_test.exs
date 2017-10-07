@@ -15,8 +15,8 @@ defmodule Furlex.FetcherTest do
   test "fetches url", %{bypass: bypass, url: url} do
     Bypass.expect_once bypass, &handle/1
 
-    assert {:ok, body} = Fetcher.fetch(url)
-    assert body        =~ "<title>Test HTML</title>"
+    assert {:ok, body, 200} = Fetcher.fetch(url)
+    assert body             =~ "<title>Test HTML</title>"
   end
 
   def handle(conn) do
