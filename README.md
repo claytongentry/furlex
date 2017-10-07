@@ -60,6 +60,7 @@ iex(1)> Furlex.unfurl "https://www.youtube.com/watch?v=Gh6H7Md_L2k"
     "keywords" => "this old house, how-to, home improvement, Episode, TV Show, DIY, Ask This Old House, Nick Offerman, Kevin O'Connor, woodworking, wood shop",
     "theme-color" => "#e62117",
     "title" => "Touring Nick Offerman’s Wood Shop"},
+  status_code: 200,
   twitter: %{"twitter:app:id:googleplay" => "com.google.android.youtube",
     "twitter:app:id:ipad" => "544007664",
     "twitter:app:id:iphone" => "544007664",
