@@ -11,7 +11,9 @@ defmodule Furlex do
   alias Furlex.{Fetcher, Parser}
   alias Furlex.Parser.{Facebook, HTML, JsonLD, Twitter}
 
-  defstruct [:canonical_url, :oembed, :facebook, :twitter, :json_ld, :other]
+  defstruct [
+    :canonical_url, :oembed, :facebook, :twitter, :json_ld, :other, :status_code
+  ]
 
   @type t :: %__MODULE__{
     canonical_url: String.t,
@@ -19,7 +21,8 @@ defmodule Furlex do
     facebook: Map.t,
     twitter: Map.t,
     json_ld: List.t,
-    other: Map.t
+    other: Map.t,
+    status_code: Integer.t,
   }
 
   @doc false
@@ -42,12 +45,12 @@ defmodule Furlex do
   """
   @spec unfurl(String.t) :: {:ok, __MODULE__.t} | {:error, Atom.t}
   def unfurl(url) do
-    with {:ok, body}     <- Fetcher.fetch(url),
-         {:ok, oembed}   <- Fetcher.fetch_oembed(url),
-         {:ok, facebook} <- Facebook.parse(body),
-         {:ok, twitter}  <- Twitter.parse(body),
-         {:ok, json_ld}  <- JsonLD.parse(body),
-         {:ok, other}    <- HTML.parse(body)
+    with {:ok, body, status_code} <- Fetcher.fetch(url),
+         {:ok, oembed}            <- Fetcher.fetch_oembed(url),
+         {:ok, facebook}          <- Facebook.parse(body),
+         {:ok, twitter}           <- Twitter.parse(body),
+         {:ok, json_ld}           <- JsonLD.parse(body),
+         {:ok, other}             <- HTML.parse(body)
     do
       {:ok, %__MODULE__{
         canonical_url: Parser.extract_canonical(body),
@@ -55,7 +58,8 @@ defmodule Furlex do
         facebook: facebook,
         twitter: twitter,
         json_ld: json_ld,
-        other: other
+        other: other,
+        status_code: status_code,
       }}
     end
   end
