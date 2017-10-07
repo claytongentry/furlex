@@ -43,7 +43,7 @@ defmodule Furlex.Mixfile do
   defp deps do
     [
       {:floki, "~> 0.17.0"},
-      {:httpoison, "~> 0.12.0"},
+      {:httpoison, "~> 0.13.0"},
       {:poison, "~> 3.1"},
 
       {:ex_doc, "~> 0.14", only: :dev, runtime: false},
