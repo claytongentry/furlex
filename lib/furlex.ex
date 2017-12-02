@@ -44,9 +44,9 @@ defmodule Furlex do
   in addition to Twitter Card, Open Graph, JSON-LD and other HTML meta tags.
   """
   @spec unfurl(String.t) :: {:ok, __MODULE__.t} | {:error, Atom.t}
-  def unfurl(url) do
-    with {:ok, body, status_code} <- Fetcher.fetch(url),
-         {:ok, oembed}            <- Fetcher.fetch_oembed(url),
+  def unfurl(url, opts \\ []) do
+    with {:ok, body, status_code} <- Fetcher.fetch(url, opts),
+         {:ok, oembed}            <- Fetcher.fetch_oembed(url, opts),
          {:ok, facebook}          <- Facebook.parse(body),
          {:ok, twitter}           <- Twitter.parse(body),
          {:ok, json_ld}           <- JsonLD.parse(body),
