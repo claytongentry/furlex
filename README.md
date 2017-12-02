@@ -94,14 +94,13 @@ config :furlex, Furlex.Parser.Twitter,
   tags: ~w(my:custom:twitter:tag)
 ```
 
-You may also configure the depth of the resulting Furlex map. The `:depth` option
-takes an atom of either `:flat` (default) or `:deep`.
+You may also configure the depth of the resulting Furlex map with a `:group_keys?` boolean.
 
 ```elixir
-config :furlex, depth: :flat
+config :furlex, group_keys?: true
 ```
 
- `:flat` depth will return values mapped directly beneath OpenGraph and TwitterCard keys, i.e.
+If this option is set to false or unconfigured, Furlex will return values mapped directly beneath OpenGraph and TwitterCard keys, i.e.
  ```elixir
  %Furlex{twitter: %{
    "twitter:app:id:googleplay" => "com.google.android.youtube",
@@ -110,7 +109,7 @@ config :furlex, depth: :flat
  }}
 ```
 
-`:deep` depth will return values grouped into colon-delimited map structures, i.e.
+If true, Furlex will return values grouped into colon-delimited map structures, i.e.
 ```elixir
 %Furlex{twitter: %{
   "twitter" => %{

@@ -16,7 +16,7 @@ defmodule Furlex.Parser do
     |> Stream.map(&extract(&1, html, match))
     |> Enum.reject(fn {_, v} -> is_nil(v) end)
     |> Map.new()
-    |> group_keys(depth())
+    |> group_keys()
   end
   def extract(tag, html, match) do
     case Floki.find(html, match.(tag)) do
@@ -51,10 +51,12 @@ defmodule Furlex.Parser do
 
   ## Examples
 
+    iex> Application.put_env(:furlex, :group_keys?, false)
     iex> Furlex.Parser.group_keys %{"twitter:app:id" => 123, "twitter:app:name" => "YouTube"}
     %{"twitter:app:id" => 123, "twitter:app:name" => "YouTube"}
 
-    iex> Furlex.Parser.group_keys %{"twitter:app:id" => 123, "twitter:app:name" => "YouTube"}, :deep
+    iex> Application.put_env(:furlex, :group_keys?, true)
+    iex> Furlex.Parser.group_keys %{"twitter:app:id" => 123, "twitter:app:name" => "YouTube"}
     %{
       "twitter" => %{
         "app" => %{
@@ -64,20 +66,23 @@ defmodule Furlex.Parser do
       }
     }
   """
-  @spec group_keys(Map.t, Atom.t) :: Map.t
-  def group_keys(map, type \\ :flat)
-  def group_keys(map, :deep) do
-    Enum.reduce map, %{}, fn
-      {_, v}, _acc when is_map(v) -> group_keys(v)
-      {k, v}, acc                 -> do_group_keys(k, v, acc)
+  @spec group_keys(Map.t) :: Map.t
+  def group_keys(map)
+  def group_keys(map) do
+    if Application.get_env(:furlex, :group_keys?) do
+      Enum.reduce map, %{}, fn
+        {_, v}, _acc when is_map(v) -> group_keys(v)
+        {k, v}, acc                 -> do_group_keys(k, v, acc)
+      end
+    else
+      map
     end
   end
-  def group_keys(map, _), do: map
 
   defp do_group_keys(key, value, acc) do
-    [h | t] = key |> String.split(":") |> Enum.reverse()
-    base    = Map.new [{h, value}]
-    result  = Enum.reduce t, base, fn key, sub_acc ->
+    [ h | t ] = key |> String.split(":") |> Enum.reverse()
+    base      = Map.new [{h, value}]
+    result    = Enum.reduce t, base, fn key, sub_acc ->
       Map.new([{key, sub_acc}])
     end
 
@@ -102,6 +107,4 @@ defmodule Furlex.Parser do
       |> Enum.at(0)
     end
   end
-
-  defp depth, do: Application.get_env(:furlex, :depth)
 end

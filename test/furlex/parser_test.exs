@@ -6,7 +6,7 @@ defmodule Furlex.ParserTest do
   doctest Parser
 
   setup do
-    Application.put_env :furlex, :depth, :deep
+    Application.put_env :furlex, :group_keys?, true
   end
 
   test "extracts tags from html" do
@@ -36,7 +36,7 @@ defmodule Furlex.ParserTest do
       "twitter:card" => "player"
     }
 
-    result = Parser.group_keys(map, :deep)
+    result = Parser.group_keys(map)
 
     assert result == %{
       "twitter" => %{
