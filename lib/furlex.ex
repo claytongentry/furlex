@@ -43,7 +43,7 @@ defmodule Furlex do
   unfurl/1 fetches oembed data if applicable to the given url's host,
   in addition to Twitter Card, Open Graph, JSON-LD and other HTML meta tags.
   """
-  @spec unfurl(String.t) :: {:ok, __MODULE__.t} | {:error, Atom.t}
+  @spec unfurl(String.t, List.t) :: {:ok, __MODULE__.t} | {:error, Atom.t}
   def unfurl(url, opts \\ []) do
     with {:ok, body, status_code} <- Fetcher.fetch(url, opts),
          {:ok, oembed}            <- Fetcher.fetch_oembed(url, opts),
