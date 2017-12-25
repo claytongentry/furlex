@@ -10,9 +10,9 @@ defmodule Furlex.Fetcher do
   @doc """
   Fetches a url and extracts the body
   """
-  @spec fetch(String.t) :: {:ok, String.t, Integer.t} | {:error, Atom.t}
-  def fetch(url) do
-    case HTTPoison.get(url) do
+  @spec fetch(String.t, List.t) :: {:ok, String.t, Integer.t} | {:error, Atom.t}
+  def fetch(url, opts \\ []) do
+    case HTTPoison.get(url, [], opts) do
       {:ok, %{body: body, status_code: status_code}} -> {:ok, body, status_code}
       other                                          -> other
     end
@@ -21,11 +21,12 @@ defmodule Furlex.Fetcher do
   @doc """
   Fetches oembed data for the given url
   """
-  @spec fetch_oembed(String.t) :: {:ok, String.t} | {:ok, nil} | {:error, Atom.t}
-  def fetch_oembed(url) do
+  @spec fetch_oembed(String.t, List.t) :: {:ok, String.t} | {:ok, nil} | {:error, Atom.t}
+  def fetch_oembed(url, opts \\ []) do
     with {:ok, endpoint} <- Oembed.endpoint_from_url(url),
          params           = %{"url" => url},
-         {:ok, response} <- HTTPoison.get(endpoint, [], params: params),
+         opts             = Keyword.put(opts, :params, params),
+         {:ok, response} <- HTTPoison.get(endpoint, [], opts),
          {:ok, body}     <- Poison.decode(response.body)
     do
       {:ok, body}
