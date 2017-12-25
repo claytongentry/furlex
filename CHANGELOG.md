@@ -1,5 +1,9 @@
 # Changelog
 
+## v.0.2.2
+* Furlex now supports passing HTTP options to Furlex.unfurl/2.
+* `:depth` config has been transformed to a `:group_keys?` boolean.
+
 ## v.0.2.1
 * Add status code to %Furlex{} structure (thanks [abitdodgy](https://github.com/abitdodgy))
 * Fix compatibility with Phoenix 1.3 (thanks, again, [abitdodgy](https://github.com/abitdodgy)!)
