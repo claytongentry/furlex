@@ -19,6 +19,11 @@ defmodule Furlex.FetcherTest do
     assert body             =~ "<title>Test HTML</title>"
   end
 
+  test "fetches url with options", %{url: url} do
+    assert {:error, %HTTPoison.Error{reason: :connect_timeout}} ==
+      Fetcher.fetch(url, timeout: 0)
+  end
+
   def handle(conn) do
     body =
       [__DIR__ | ~w(.. fixtures test.html)]
