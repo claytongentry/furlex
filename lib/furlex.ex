@@ -65,9 +65,9 @@ defmodule Furlex do
     fetch_oembed = Task.async Fetcher, :fetch_oembed, [ url ]
     yield        = Task.yield_many [fetch, fetch_oembed]
 
-    with [ fetch, fetch_oembed ]                   <- yield,
-         {_fetch, {:ok, {:ok, body, status_code}}} <- fetch,
-         {_fetch_oembed, {:ok, oembed}}            <- fetch_oembed
+    with [ fetch, fetch_oembed ]                          <- yield,
+         {_fetch, {:ok,        {:ok, body, status_code}}} <- fetch,
+         {_fetch_oembed, {:ok, {:ok, oembed}}}            <- fetch_oembed
     do
       {:ok, {body, status_code}, oembed}
     else
