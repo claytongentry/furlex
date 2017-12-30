@@ -30,5 +30,8 @@ defmodule Furlex.Parser.HTMLTest do
       "66Kpz8sWyMtS35U7Eodir6sXoV5gJe7a9kNN9xQQnYE"
     ]
     assert meta["robots"] == "index, follow"
+
+    # Ensure resultant meta is encodable
+    assert {:ok, _json} = Poison.encode(meta)
   end
 end
