@@ -25,15 +25,23 @@ defmodule Furlex.Parser.HTML do
   end
 
   defp to_map(element, acc) do
-    key    = extract_attribute(element, "name")
-    value  = Map.get(acc, key)
-    to_add = extract_attribute(element, "content") ||
-             extract_attribute(element, "property")
+    key      = extract_attribute(element, "name")
+    existing = Map.get(acc, key)
+    to_add   = extract_attribute(element, "content") ||
+               extract_attribute(element, "property")
 
-    if is_nil(value) do
+    if is_nil(existing) do
       Map.put(acc, key, to_add)
     else
-      value = Enum.uniq([to_add | [value]]) |> flatten()
+      value =
+        to_add
+        |> prepend(existing)
+        |> Enum.uniq()
+        |> case do
+          [ element ] -> element
+          list        -> list
+        end
+
       Map.put(acc, key, value)
     end
   end
@@ -45,6 +53,6 @@ defmodule Furlex.Parser.HTML do
     end
   end
 
-  defp flatten([ element ]), do: element
-  defp flatten(list),        do: List.flatten(list)
+  defp prepend(value, list) when is_list(list), do: [ value | list ]
+  defp prepend(value, element),                 do: [ value | [ element ]]
 end
