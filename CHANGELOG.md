@@ -1,5 +1,8 @@
 # Changelog
 
+## v.0.3.1
+* Fixes handling of duplicate HTML meta tags
+
 ## v.0.3.0
 * Individual fetch and parse operations now run asynchronously
 
