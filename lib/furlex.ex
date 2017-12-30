@@ -66,7 +66,7 @@ defmodule Furlex do
     yield        = Task.yield_many [fetch, fetch_oembed]
 
     with [ fetch, fetch_oembed ]                          <- yield,
-         {_fetch, {:ok,        {:ok, body, status_code}}} <- fetch,
+         {_fetch,        {:ok, {:ok, body, status_code}}} <- fetch,
          {_fetch_oembed, {:ok, {:ok, oembed}}}            <- fetch_oembed
     do
       {:ok, {body, status_code}, oembed}
