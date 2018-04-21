@@ -93,10 +93,10 @@ defmodule Furlex.Oembed do
 
   @doc false
   def start_link(opts \\ []) do
-    GenServer.start_link(__MODULE__, opts)
+    GenServer.start_link(__MODULE__, Keyword.merge(opts, Application.get_env(:furlex, :options, [])))
   end
 
-  def init([env: :test]) do
+  def init(env: :test) do
     {:ok, [
       %{
         "provider_name" => "Vimeo",
