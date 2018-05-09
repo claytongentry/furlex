@@ -106,8 +106,7 @@ defmodule Furlex.Oembed do
   end
 
   def process_url(path) do
-    (config(:oembed_host) <> path)
-    |> IO.inspect()
+    config(:oembed_host) <> path
   end
 
   def process_response_body(body) do
