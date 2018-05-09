@@ -10,7 +10,7 @@ defmodule Furlex.OembedTest do
     url    = "http://localhost:#{bypass.port}"
     config = Application.get_env :furlex, Oembed
 
-    Application.put_env :furlex, Oembed, [host: url]
+    Application.put_env :furlex, Oembed, [oembed_host: url]
 
     on_exit fn ->
       Application.put_env :furlex, Oembed, config
@@ -21,8 +21,10 @@ defmodule Furlex.OembedTest do
     {:ok, bypass: bypass}
   end
 
-  test "returns endpoint from url" do
-    assert {:error, :no_oembed_provider}          ==
+  test "returns endpoint from url", %{bypass: bypass} do
+    Bypass.expect bypass, &handle/1
+
+    assert {:error, :no_oembed_provider} ==
       Oembed.endpoint_from_url("foobar")
 
     url    = "https://vimeo.com/88856141"
@@ -34,6 +36,8 @@ defmodule Furlex.OembedTest do
   end
 
   def handle(%{request_path: "/providers.json"} = conn) do
+    assert conn.method == "GET"
+
     providers =
       [__DIR__ | ~w(.. fixtures providers.json)]
       |> Path.join()
