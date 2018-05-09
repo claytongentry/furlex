@@ -3,14 +3,13 @@ defmodule Furlex.OembedTest do
 
   alias Furlex.Oembed
 
-  doctest Oembed
-
   setup do
     bypass = Bypass.open()
     url    = "http://localhost:#{bypass.port}"
     config = Application.get_env :furlex, Oembed
 
-    Application.put_env :furlex, Oembed, [oembed_host: url]
+    new_config = Keyword.put config, :oembed_host, url
+    Application.put_env :furlex, Oembed, new_config
 
     on_exit fn ->
       Application.put_env :furlex, Oembed, config
@@ -30,7 +29,7 @@ defmodule Furlex.OembedTest do
     url    = "https://vimeo.com/88856141"
     params = %{"format" => "json"}
 
-    {:ok, endpoint} = Oembed.endpoint_from_url(url, params)
+    {:ok, endpoint} = Oembed.endpoint_from_url(url, params, [skip_cache?: true])
 
     assert endpoint == "https://vimeo.com/api/oembed.json"
   end

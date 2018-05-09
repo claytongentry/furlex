@@ -49,8 +49,8 @@ defmodule Furlex.Oembed do
     {:ok, "https://vimeo.com/api/oembed.xml"}
   """
   @spec endpoint_from_url(String.t, Map.t) :: {:ok, String.t} | {:error, Atom.t}
-  def endpoint_from_url(url, params \\ %{"format" => "json"}) do
-    case provider_from_url(url) do
+  def endpoint_from_url(url, params \\ %{"format" => "json"}, opts \\ []) do
+    case provider_from_url(url, opts) do
       nil      ->
         {:error, :no_oembed_provider}
 
@@ -60,8 +60,11 @@ defmodule Furlex.Oembed do
   end
 
   # Maps a url to a provider, or returns nil if no such provider exists
-  defp provider_from_url(url) do
-    {:ok, providers} = fetch_providers()
+  defp provider_from_url(url, opts) do
+    fetch_type =
+      if Keyword.get(opts, :skip_cache?, false), do: :hard, else: :soft
+
+    {:ok, providers} = fetch_providers(fetch_type)
 
     case URI.parse(url) do
       %URI{host: nil}  ->
