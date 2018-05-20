@@ -42,10 +42,12 @@ defmodule Furlex do
 
   unfurl/1 fetches oembed data if applicable to the given url's host,
   in addition to Twitter Card, Open Graph, JSON-LD and other HTML meta tags.
+
+  unfurl/2 also accepts a keyword list that will be passed to HTTPoison.
   """
-  @spec unfurl(String.t) :: {:ok, __MODULE__.t} | {:error, Atom.t}
-  def unfurl(url) do
-    with {:ok, {body, status_code}, oembed} <- fetch(url),
+  @spec unfurl(String.t, Keyword.t) :: {:ok, __MODULE__.t} | {:error, Atom.t}
+  def unfurl(url, opts \\ []) do
+    with {:ok, {body, status_code}, oembed} <- fetch(url, opts),
          {:ok, results}                     <- parse(body)
     do
       {:ok, %__MODULE__{
@@ -60,9 +62,9 @@ defmodule Furlex do
     end
   end
 
-  defp fetch(url) do
-    fetch        = Task.async Fetcher, :fetch,        [ url ]
-    fetch_oembed = Task.async Fetcher, :fetch_oembed, [ url ]
+  defp fetch(url, opts) do
+    fetch        = Task.async Fetcher, :fetch,        [ url, opts ]
+    fetch_oembed = Task.async Fetcher, :fetch_oembed, [ url, opts ]
     yield        = Task.yield_many [fetch, fetch_oembed]
 
     with [ fetch, fetch_oembed ]                          <- yield,
