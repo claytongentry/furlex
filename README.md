@@ -11,7 +11,7 @@ Add `:furlex` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:furlex, "~> 0.3.0"}]
+  [{:furlex, "~> 0.3.3"}]
 end
 ```
 

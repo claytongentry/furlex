@@ -1,5 +1,8 @@
 # Changelog
 
+## v.0.3.3
+* Supports fetch options passed through unfurl (thanks [aliou](https://github.com/aliou)!)
+
 ## v.0.3.2
 * Remove usage of Mix.env() for segmenting app logic. Instead, leverage test bypasses where needed (h/t [Luciam91](https://github.com/Luciam91))
 * Strip out needless cruft from test fixtures.
