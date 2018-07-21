@@ -27,13 +27,10 @@ defmodule Furlex.Oembed do
         {:error, :fetch_error}
     end
   end
-  def fetch_providers(_type) do
-    providers = GenServer.call __MODULE__, :providers
-
-    if is_nil(providers) or length(providers) == 0 do
-      fetch_providers(:hard)
-    else
-      {:ok, providers}
+  def fetch_providers(_soft) do
+    case GenServer.call(__MODULE__, :providers) do
+      nil       -> fetch_providers(:hard)
+      providers -> {:ok, providers}
     end
   end
 
@@ -93,7 +90,7 @@ defmodule Furlex.Oembed do
 
   @doc false
   def start_link(opts \\ []) do
-    GenServer.start_link __MODULE__, [], opts
+    GenServer.start_link __MODULE__, nil, opts
   end
 
   def init(state) do
