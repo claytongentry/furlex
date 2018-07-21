@@ -22,12 +22,11 @@ defmodule Furlex.Parser do
     case Floki.find(html, match.(tag)) do
       nil      -> nil
       elements ->
-        content = do_extract_content(elements)
         content =
-          cond do
-            length(content) == 0 -> nil
-            length(content) == 1 -> Enum.at(content, 0)
-            true                 -> content
+          case do_extract_content(elements) do
+            []          -> nil
+            [ element ] -> element
+            content     -> content
           end
 
         {tag, content}

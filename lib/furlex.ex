@@ -78,12 +78,10 @@ defmodule Furlex do
   end
 
   defp parse(body) do
-    fun   = :parse
-    args  = [ body ]
-    tasks = Enum.map [Facebook, Twitter, JsonLD, HTML], &Task.async(&1, fun, args)
-    yield = Task.yield_many(tasks)
+    parse = &Task.async(&1, :parse, [ body ])
+    tasks = Enum.map([Facebook, Twitter, JsonLD, HTML], parse)
 
-    with [ facebook, twitter, json_ld, other ] <- yield,
+    with [ facebook, twitter, json_ld, other ] <- Task.yield_many(tasks),
          {_facebook, {:ok, {:ok, facebook}}}   <- facebook,
          {_twitter,  {:ok, {:ok, twitter}}}    <- twitter,
          {_json_ld,  {:ok, {:ok, json_ld}}}    <- json_ld,
