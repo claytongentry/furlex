@@ -24,7 +24,7 @@ end
 ```
 
 ## Usage
-To unfurl a url, simply pass a url to `Furlex.unfurl/1`
+To unfurl a url, simply pass it to `Furlex.unfurl/1`
 
 ```elixir
 iex(1)> Furlex.unfurl "https://www.youtube.com/watch?v=Gh6H7Md_L2k"
