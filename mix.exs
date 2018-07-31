@@ -46,7 +46,7 @@ defmodule Furlex.Mixfile do
       {:bypass, "~> 0.8", only: :test},
       {:floki, "~> 0.20.3"},
       {:httpoison, "~> 1.2"},
-      {:poison, "~> 4.0"}
+      {:poison, "~> 3.0"}
     ]
   end
 
