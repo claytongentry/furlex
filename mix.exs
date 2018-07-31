@@ -4,15 +4,15 @@ defmodule Furlex.Mixfile do
   def project do
     [
       app: :furlex,
-      version: "0.3.3",
-      elixir: "~> 1.4",
+      version: "0.3.4",
+      elixir: "~> 1.6",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
       description: description(),
       package: package(),
       deps: deps(),
       name: "Furlex",
-      source_url: "https://github.com/claytongentry/furlex",
+      source_url: "https://github.com/fanhero/furlex",
       docs: [
         main: "Furlex",
         extras: ~w(README.md CHANGELOG.md)
@@ -42,13 +42,11 @@ defmodule Furlex.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:floki, "~> 0.17.0"},
-      {:httpoison, "~> 0.13.0"},
-      {:poison, "~> 3.1"},
-
       {:ex_doc, "~> 0.14", only: :dev, runtime: false},
-
-      {:bypass, "~> 0.8", only: :test}
+      {:bypass, "~> 0.8", only: :test},
+      {:floki, "~> 0.20.3"},
+      {:httpoison, "~> 1.2"},
+      {:poison, "~> 4.0"}
     ]
   end
 
