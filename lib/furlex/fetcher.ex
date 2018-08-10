@@ -23,9 +23,9 @@ defmodule Furlex.Fetcher do
   """
   @spec fetch_oembed(String.t, List.t) :: {:ok, String.t} | {:ok, nil} | {:error, Atom.t}
   def fetch_oembed(url, opts \\ []) do
+    opts = Keyword.put(opts, :params, %{"url" => url})
+
     with {:ok, endpoint} <- Oembed.endpoint_from_url(url),
-         params           = %{"url" => url},
-         opts             = Keyword.put(opts, :params, params),
          {:ok, response} <- HTTPoison.get(endpoint, [], opts),
          {:ok, body}     <- Poison.decode(response.body)
     do
@@ -34,8 +34,8 @@ defmodule Furlex.Fetcher do
       {:error, :no_oembed_provider} ->
         {:ok, nil}
 
-      other ->
-        "Could not fetch oembed for #{inspect url}: #{inspect other}"
+      {:error, reason} ->
+        "Could not fetch oembed for #{inspect url}: #{inspect(reason)}"
         |> Logger.error()
 
         {:ok, nil}
