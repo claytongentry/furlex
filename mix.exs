@@ -42,8 +42,8 @@ defmodule Furlex.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:floki, "~> 0.17.0"},
-      {:httpoison, "~> 0.13.0"},
+      {:floki, "~> 0.20.0"},
+      {:httpoison, "~> 1.0"},
       {:poison, "~> 3.1"},
 
       {:ex_doc, "~> 0.14", only: :dev, runtime: false},
@@ -56,8 +56,8 @@ defmodule Furlex.Mixfile do
     """
     Furlex is a structured data extraction tool written in Elixir.
 
-    It currently supports unfurling oEmbed, Twitter Card, Facebook Open Graph, JSON-LD
-    and plain ole' HTML `<meta />` data out of any url you supply.
+    It supports unfurling oEmbed, Twitter Card, Facebook Open Graph, JSON-LD,
+    RDF, and plain ole' HTML `<meta />` data out of any url you supply.
     """
   end
 
