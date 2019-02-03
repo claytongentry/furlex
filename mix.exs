@@ -46,6 +46,7 @@ defmodule Furlex.Mixfile do
       {:httpoison, "~> 0.13.0"},
       {:poison, "~> 3.1"},
 
+      {:benchee, "~> 0.13", only: :dev},
       {:ex_doc, "~> 0.14", only: :dev, runtime: false},
 
       {:bypass, "~> 0.8", only: :test}
