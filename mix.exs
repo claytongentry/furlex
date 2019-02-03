@@ -31,21 +31,13 @@ defmodule Furlex.Mixfile do
     ]
   end
 
-  # Dependencies can be Hex packages:
-  #
-  #   {:my_dep, "~> 0.3.0"}
-  #
-  # Or git/path repositories:
-  #
-  #   {:my_dep, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
-  #
-  # Type "mix help deps" for more examples and options
   defp deps do
     [
       {:floki, "~> 0.17.0"},
       {:httpoison, "~> 0.13.0"},
       {:poison, "~> 3.1"},
 
+      {:benchee, "~> 0.13", only: :dev},
       {:ex_doc, "~> 0.14", only: :dev, runtime: false},
 
       {:bypass, "~> 0.8", only: :test}
