@@ -89,7 +89,7 @@ defmodule Furlex do
     parse = &Task.async(&1, :parse, [body])
     tasks = Enum.map([Facebook, Twitter, JsonLD, HTML, CustomHTML], parse)
 
-    with [facebook, twitter, json_ld, other, html] <- Task.yield_many(tasks),
+    with [facebook, twitter, json_ld, other, html] <- Task.yield_many(tasks, 30_000),
          {_facebook, {:ok, {:ok, facebook}}} <- facebook,
          {_twitter, {:ok, {:ok, twitter}}} <- twitter,
          {_json_ld, {:ok, {:ok, json_ld}}} <- json_ld,
