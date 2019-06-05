@@ -1,6 +1,8 @@
 defmodule Furlex.Parser.JsonLD do
   @behaviour Furlex.Parser
 
+  @json_library Application.get_env(:furlex, :json_library)
+
   @spec parse(String.t) :: nil | {:ok, List.t}
   def parse(html) do
     meta = "script[type=\"application/ld+json\"]"
@@ -22,6 +24,6 @@ defmodule Furlex.Parser.JsonLD do
   defp decode(element) do
     element
     |> Floki.text(js: true)
-    |> Poison.decode!()
+    |> @json_library.decode!()
   end
 end

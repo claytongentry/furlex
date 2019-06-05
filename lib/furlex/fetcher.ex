@@ -7,6 +7,8 @@ defmodule Furlex.Fetcher do
 
   alias Furlex.Oembed
 
+  @json_library Application.get_env(:furlex, :json_library)
+
   @doc """
   Fetches a url and extracts the body
   """
@@ -27,7 +29,7 @@ defmodule Furlex.Fetcher do
          params           = %{"url" => url},
          opts             = Keyword.put(opts, :params, params),
          {:ok, response} <- HTTPoison.get(endpoint, [], opts),
-         {:ok, body}     <- Poison.decode(response.body)
+         {:ok, body}     <- @json_library.decode(response.body)
     do
       {:ok, body}
     else

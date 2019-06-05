@@ -30,3 +30,5 @@ use Mix.Config
 #     import_config "#{Mix.env}.exs"
 config :furlex, Furlex.Oembed,
   oembed_host: "https://oembed.com"
+
+import_config "#{Mix.env}.exs"
