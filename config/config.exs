@@ -31,4 +31,5 @@ use Mix.Config
 config :furlex, Furlex.Oembed,
   oembed_host: "https://oembed.com"
 
-import_config "#{Mix.env}.exs"
+# Configure default json library
+config :furlex, :json_library, Jason
