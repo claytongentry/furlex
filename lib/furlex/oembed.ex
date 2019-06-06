@@ -8,7 +8,7 @@ defmodule Furlex.Oembed do
 
   require Logger
 
-  @json_library Application.get_env(:furlex, :json_library)
+  @json_library Application.get_env(:furlex, :json_library, Jason)
 
   @doc """
   Fetches the list of Oembed providers

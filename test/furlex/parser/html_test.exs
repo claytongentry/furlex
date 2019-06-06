@@ -3,7 +3,7 @@ defmodule Furlex.Parser.HTMLTest do
 
   alias Furlex.Parser.HTML
 
-  @json_library Application.get_env(:furlex, :json_library)
+  @json_library Application.get_env(:furlex, :json_library, Jason)
 
   doctest HTML
 

@@ -7,7 +7,7 @@ defmodule Furlex.Fetcher do
 
   alias Furlex.Oembed
 
-  @json_library Application.get_env(:furlex, :json_library)
+  @json_library Application.get_env(:furlex, :json_library, Jason)
 
   @doc """
   Fetches a url and extracts the body

@@ -1,7 +1,7 @@
 defmodule Furlex.Parser.JsonLD do
   @behaviour Furlex.Parser
 
-  @json_library Application.get_env(:furlex, :json_library)
+  @json_library Application.get_env(:furlex, :json_library, Jason)
 
   @spec parse(String.t) :: nil | {:ok, List.t}
   def parse(html) do
