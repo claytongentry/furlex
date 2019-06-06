@@ -7,7 +7,7 @@ and plain ole' HTML `<meta />` data out of any url you supply.
 
 ## Installation
 
-Add `:furlex` to your list of dependencies in `mix.exs`.
+Add `:furlex` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
