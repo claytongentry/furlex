@@ -34,7 +34,7 @@ defmodule Furlex.Mixfile do
   defp deps do
     [
       {:floki, "~> 0.17.0"},
-      {:httpoison, "~> 0.13.0"},
+      {:httpoison, "~> 1.5"},
       {:jason, "~> 1.0", optional: true},
 
       {:benchee, "~> 0.13", only: :dev},
