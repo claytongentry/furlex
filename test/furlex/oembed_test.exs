@@ -6,7 +6,7 @@ defmodule Furlex.OembedTest do
   setup do
     bypass = Bypass.open()
     url    = "http://localhost:#{bypass.port}"
-    config = Application.get_env :furlex, Oembed
+    config = Application.get_env :furlex, Oembed, []
 
     new_config = Keyword.put config, :oembed_host, url
     Application.put_env :furlex, Oembed, new_config
