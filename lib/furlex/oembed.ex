@@ -108,7 +108,7 @@ defmodule Furlex.Oembed do
   end
 
   def process_url(path) do
-    config(:oembed_host) <> path
+    oembed_host() <> path
   end
 
   def process_response_body(body) do
@@ -122,5 +122,9 @@ defmodule Furlex.Oembed do
     :furlex
     |> Application.get_env(__MODULE__)
     |> Keyword.get(key)
+  end
+
+  defp oembed_host do
+    config(:oembed_host) || "https://oembed.com"
   end
 end
