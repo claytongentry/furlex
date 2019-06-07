@@ -1,5 +1,9 @@
 # Changelog
 
+## v.0.4.0
+* Make json library configurable, default to Jason ([abitdodgy](https://github.com/abitdodgy))
+* Bump HTTPoison to 1.5 ([abitdodgy](https://github.com/abitdodgy))
+
 ## v.0.3.3
 * Supports fetch options passed through unfurl (thanks [aliou](https://github.com/aliou)!)
 
