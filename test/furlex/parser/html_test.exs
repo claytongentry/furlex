@@ -3,6 +3,8 @@ defmodule Furlex.Parser.HTMLTest do
 
   alias Furlex.Parser.HTML
 
+  @json_library Application.get_env(:furlex, :json_library, Jason)
+
   doctest HTML
 
   test "parses HTML meta data" do
@@ -32,6 +34,6 @@ defmodule Furlex.Parser.HTMLTest do
     assert meta["robots"] == "index, follow"
 
     # Ensure resultant meta is encodable
-    assert {:ok, _json} = Poison.encode(meta)
+    assert {:ok, _json} = @json_library.encode(meta)
   end
 end

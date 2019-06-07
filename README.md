@@ -23,6 +23,12 @@ def application do
 end
 ```
 
+[Jason](http://github.com/michalmuskala/jason) is the default json library in Furlex. You can however configure Furlex to use another library. For example:
+
+```elixir
+config :furlex, :json_library, YourLibraryOfChoice
+```
+
 ## Usage
 To unfurl a url, simply pass it to `Furlex.unfurl/1`
 
