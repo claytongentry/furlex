@@ -1,5 +1,8 @@
 # Changelog
 
+## v.0.4.2
+* Don't require oembed host configuration
+
 ## v.0.4.1
 * Various dependency updates
 

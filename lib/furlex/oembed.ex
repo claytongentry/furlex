@@ -120,7 +120,7 @@ defmodule Furlex.Oembed do
 
   defp config(key) do
     :furlex
-    |> Application.get_env(__MODULE__)
+    |> Application.get_env(__MODULE__, [])
     |> Keyword.get(key)
   end
 
