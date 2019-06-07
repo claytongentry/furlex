@@ -38,7 +38,7 @@ defmodule Furlex.Mixfile do
       {:jason, "~> 1.0", optional: true},
 
       {:benchee, "~> 0.13", only: :dev},
-      {:ex_doc, "~> 0.14", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.19", only: :dev, runtime: false},
 
       {:bypass, "~> 0.8", only: :test},
     ]
