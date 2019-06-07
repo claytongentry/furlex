@@ -1,5 +1,8 @@
 # Changelog
 
+## v.0.4.1
+* Various dependency updates
+
 ## v.0.4.0
 * Make json library configurable, default to Jason ([abitdodgy](https://github.com/abitdodgy))
 * Bump HTTPoison to 1.5 ([abitdodgy](https://github.com/abitdodgy))
