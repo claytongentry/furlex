@@ -1,5 +1,8 @@
 # Changelog
 
+## v.0.4.3
+* Relaxes cowboy dependency ([abitdodgy](https://github.com/abitdodgy))
+
 ## v.0.4.2
 * Don't require oembed host configuration
 
