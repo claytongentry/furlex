@@ -34,6 +34,20 @@ defmodule Furlex.OembedTest do
     assert endpoint == "https://vimeo.com/api/oembed.json"
   end
 
+  test "returns endpoint from url with subdomain", %{bypass: bypass} do
+    Bypass.expect(bypass, &handle/1)
+
+    assert {:error, :no_oembed_provider} ==
+             Oembed.endpoint_from_url("foobar")
+
+    url = "https://twitter.com/arshia__/status/1204481088422178817?s=20"
+    params = %{"format" => "json"}
+
+    {:ok, endpoint} = Oembed.endpoint_from_url(url, params, skip_cache?: true)
+
+    assert endpoint == "https://publish.twitter.com/oembed"
+  end
+
   def handle(%{request_path: "/providers.json"} = conn) do
     assert conn.method == "GET"
 
