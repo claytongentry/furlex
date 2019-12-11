@@ -1,7 +1,7 @@
 ## Parsers
 
 ### Vimeo
-vimeo = File.read! "./test/fixtures/vimeo.html"
+vimeo = File.read!("./test/fixtures/vimeo.html")
 
 Benchee.run(%{
   "facebook" => fn -> Furlex.Parser.Facebook.parse(vimeo) end,

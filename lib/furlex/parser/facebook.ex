@@ -27,10 +27,10 @@ defmodule Furlex.Parser.Facebook do
     video:release_date video:tag video:writer video:series
   )
 
-  @spec parse(String.t) :: {:ok, Map.t}
+  @spec parse(String.t()) :: {:ok, Map.t()}
   def parse(html) do
-    meta = &("meta[property=\"#{&1}\"]")
-    map  = Parser.extract tags(), html, meta
+    meta = &"meta[property=\"#{&1}\"]"
+    map = Parser.extract(tags(), html, meta)
 
     {:ok, map}
   end
