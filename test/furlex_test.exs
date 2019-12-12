@@ -1,5 +1,5 @@
 defmodule FurlexTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   setup do
     bypass = Bypass.open()

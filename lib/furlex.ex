@@ -72,7 +72,7 @@ defmodule Furlex do
   defp fetch(url, opts) do
     fetch = Task.async(Fetcher, :fetch, [url, opts])
     fetch_oembed = Task.async(Fetcher, :fetch_oembed, [url, opts])
-    yield = Task.yield_many([fetch, fetch_oembed])
+    yield = Task.yield_many([fetch, fetch_oembed], 10_000)
 
     with [fetch, fetch_oembed] <- yield,
          {_fetch, {:ok, {:ok, body, status_code}}} <- fetch,
@@ -87,7 +87,7 @@ defmodule Furlex do
     parse = &Task.async(&1, :parse, [body])
     tasks = Enum.map([Facebook, Twitter, JsonLD, HTML], parse)
 
-    with [facebook, twitter, json_ld, other] <- Task.yield_many(tasks),
+    with [facebook, twitter, json_ld, other] <- Task.yield_many(tasks, 18_000),
          {_facebook, {:ok, {:ok, facebook}}} <- facebook,
          {_twitter, {:ok, {:ok, twitter}}} <- twitter,
          {_json_ld, {:ok, {:ok, json_ld}}} <- json_ld,

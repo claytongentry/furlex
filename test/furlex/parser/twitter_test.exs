@@ -1,9 +1,13 @@
 defmodule Furlex.Parser.TwitterTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   alias Furlex.Parser.Twitter
 
   doctest Twitter
+
+  setup do
+    Application.put_env(:furlex, :group_keys?, true)
+  end
 
   test "parses Twitter Cards" do
     html =
