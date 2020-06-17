@@ -8,6 +8,8 @@ defmodule Furlex.Oembed do
 
   require Logger
 
+  @json_library Application.get_env(:furlex, :json_library, Jason)
+
   @doc """
   Fetches the list of Oembed providers
 
@@ -106,11 +108,11 @@ defmodule Furlex.Oembed do
   end
 
   def process_url(path) do
-    config(:oembed_host) <> path
+    oembed_host() <> path
   end
 
   def process_response_body(body) do
-    case Poison.decode(body) do
+    case @json_library.decode(body) do
       {:ok, body} -> body
       _error -> body
     end
@@ -118,7 +120,11 @@ defmodule Furlex.Oembed do
 
   defp config(key) do
     :furlex
-    |> Application.get_env(__MODULE__)
+    |> Application.get_env(__MODULE__, [])
     |> Keyword.get(key)
+  end
+
+  defp oembed_host do
+    config(:oembed_host) || "https://oembed.com"
   end
 end

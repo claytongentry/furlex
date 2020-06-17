@@ -11,7 +11,7 @@ Add `:furlex` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:furlex, "~> 0.3.3"}]
+  [{:furlex, "~> 0.4.3"}]
 end
 ```
 
@@ -21,6 +21,12 @@ Then run `$ mix deps.get`. Also add `:furlex` to your applications list:
 def application do
   [applications: [:furlex]]
 end
+```
+
+[Jason](http://github.com/michalmuskala/jason) is the default json library in Furlex. You can however configure Furlex to use another library. For example:
+
+```elixir
+config :furlex, :json_library, YourLibraryOfChoice
 ```
 
 ## Usage

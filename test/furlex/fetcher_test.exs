@@ -20,7 +20,7 @@ defmodule Furlex.FetcherTest do
   end
 
   test "fetches url with options", %{url: url} do
-    assert {:error, %HTTPoison.Error{reason: :connect_timeout}} ==
+    assert {:error, %HTTPoison.Error{reason: :checkout_timeout}} ==
       Fetcher.fetch(url, timeout: 0)
   end
 
