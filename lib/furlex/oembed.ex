@@ -85,7 +85,7 @@ defmodule Furlex.Oembed do
   end
 
   defp host_matches?(host, %{"provider_url" => provider_url}) do
-    Regex.match? ~r/https?:\/\/#{host}/, provider_url
+    Regex.match?(~r/https?:\/\/([a-zA-Z0-9]+\.)?#{host}/, provider_url)
   end
 
   ## GenServer callbacks
