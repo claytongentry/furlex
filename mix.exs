@@ -27,14 +27,14 @@ defmodule Furlex.Mixfile do
     # Specify extra applications you'll use from Erlang/Elixir
     [
       mod: {Furlex, []},
-      extra_applications: [:httpoison, :logger]
+      extra_applications: [:logger]
     ]
   end
 
   defp deps do
     [
       {:floki, "~> 0.17.0"},
-      {:httpoison, "~> 1.5"},
+      {:tesla, "~> 1.3.0"},
       {:jason, "~> 1.0", optional: true},
       {:plug_cowboy, "~> 1.0 or ~> 2.0"},
       {:benchee, "~> 0.13", only: :dev},

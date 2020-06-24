@@ -4,7 +4,7 @@ defmodule Furlex.Oembed do
   """
 
   use GenServer
-  use HTTPoison.Base
+  use Tesla
 
   require Logger
 
@@ -19,8 +19,9 @@ defmodule Furlex.Oembed do
   @spec fetch_providers(Atom.t) :: {:ok, List.t} | {:error, Atom.t}
   def fetch_providers(type \\ :soft)
   def fetch_providers(:hard) do
-    case get("/providers.json") do
+    case get("https://oembed.com/providers.json") do
       {:ok, %{body: providers}} ->
+        {:ok, providers} = Jason.decode(providers)
         GenServer.cast __MODULE__, {:providers, providers}
         {:ok, providers}
 

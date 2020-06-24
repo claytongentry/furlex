@@ -14,8 +14,8 @@ defmodule Furlex.Fetcher do
   """
   @spec fetch(String.t, List.t) :: {:ok, String.t, Integer.t} | {:error, Atom.t}
   def fetch(url, opts \\ []) do
-    case HTTPoison.get(url, [], opts) do
-      {:ok, %{body: body, status_code: status_code}} -> {:ok, body, status_code}
+    case Tesla.get(url, opts) do
+      {:ok, %{body: body, status: status_code}} -> {:ok, body, status_code}
       other                                          -> other
     end
   end
@@ -28,7 +28,7 @@ defmodule Furlex.Fetcher do
     with {:ok, endpoint} <- Oembed.endpoint_from_url(url),
          params           = %{"url" => url},
          opts             = Keyword.put(opts, :params, params),
-         {:ok, response} <- HTTPoison.get(endpoint, [], opts),
+         {:ok, response} <- Tesla.get(endpoint, opts),
          {:ok, body}     <- @json_library.decode(response.body)
     do
       {:ok, body}
