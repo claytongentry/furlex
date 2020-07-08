@@ -56,6 +56,7 @@ defmodule Furlex do
   @spec unfurl(String.t(), Keyword.t()) :: {:ok, __MODULE__.t()} | {:error, Atom.t()}
   def unfurl(url, opts \\ []) do
     with {:ok, {body, status_code}, oembed} <- fetch(url, opts),
+         {:ok, body} <- Floki.parse_document(body),
          {:ok, results} <- parse(body) do
       {:ok,
        %__MODULE__{
