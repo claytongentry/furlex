@@ -13,10 +13,10 @@ defmodule Furlex.Parser.Twitter do
     twitter:app:url:googleplay twitter:app:id:googleplay
   )
 
-  @spec parse(String.t) :: {:ok, Map.t}
+  @spec parse(String.t()) :: {:ok, Map.t()}
   def parse(html) do
-    meta = &("meta[name=\"#{&1}\"]")
-    map  = Parser.extract tags(), html, meta
+    meta = &"meta[name=\"#{&1}\"]"
+    map = Parser.extract(tags(), html, meta)
 
     {:ok, map}
   end

@@ -1,17 +1,24 @@
 defmodule Furlex.Parser.FacebookTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   alias Furlex.Parser.Facebook
 
   doctest Facebook
 
-  test "parses Facebook Open Graph" do
-    html = "<html><head><meta property=\"og:url\" " <>
-           "content=\"www.example.com\"/></head></html>"
+  setup do
+    Application.put_env(:furlex, :group_keys?, true)
+  end
 
-    assert {:ok, %{
-      "og" => %{
-        "url" => "www.example.com"
-    }}} == Facebook.parse(html)
+  test "parses Facebook Open Graph" do
+    html =
+      "<html><head><meta property=\"og:url\" " <>
+        "content=\"www.example.com\"/></head></html>"
+
+    assert {:ok,
+            %{
+              "og" => %{
+                "url" => "www.example.com"
+              }
+            }} == Facebook.parse(html)
   end
 end

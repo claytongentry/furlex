@@ -3,21 +3,23 @@ defmodule Furlex.Parser.JsonLD do
 
   @json_library Application.get_env(:furlex, :json_library, Jason)
 
-  @spec parse(String.t) :: nil | {:ok, List.t}
+  @spec parse(String.t()) :: nil | {:ok, List.t()}
   def parse(html) do
     meta = "script[type=\"application/ld+json\"]"
 
-    case Floki.find(html, meta) do
-      nil      ->
-        {:ok, []}
+    with {:ok, document} <- Floki.parse_document(html) do
+      case Floki.find(document, meta) do
+        nil ->
+          {:ok, []}
 
-      elements ->
-        json_ld =
-          elements
-          |> Enum.map(&decode/1)
-          |> List.flatten()
+        elements ->
+          json_ld =
+            elements
+            |> Enum.map(&decode/1)
+            |> List.flatten()
 
-        {:ok, json_ld}
+          {:ok, json_ld}
+      end
     end
   end
 

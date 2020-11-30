@@ -7,21 +7,21 @@ defmodule Furlex.FetcherTest do
 
   setup do
     bypass = Bypass.open()
-    url    = "http://localhost:#{bypass.port}"
+    url = "http://localhost:#{bypass.port}"
 
     {:ok, bypass: bypass, url: url}
   end
 
   test "fetches url", %{bypass: bypass, url: url} do
-    Bypass.expect_once bypass, &handle/1
+    Bypass.expect_once(bypass, &handle/1)
 
     assert {:ok, body, 200} = Fetcher.fetch(url)
-    assert body             =~ "<title>Test HTML</title>"
+    assert body =~ "<title>Test HTML</title>"
   end
 
   test "fetches url with options", %{url: url} do
     assert {:error, %HTTPoison.Error{reason: :checkout_timeout}} ==
-      Fetcher.fetch(url, timeout: 0)
+             Fetcher.fetch(url, timeout: 0)
   end
 
   def handle(conn) do
@@ -30,6 +30,6 @@ defmodule Furlex.FetcherTest do
       |> Path.join()
       |> File.read!()
 
-    Plug.Conn.resp conn, 200, body
+    Plug.Conn.resp(conn, 200, body)
   end
 end
