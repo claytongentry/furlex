@@ -33,13 +33,11 @@ defmodule Furlex do
 
   @doc false
   def start(_type, _args) do
-    import Supervisor.Spec
+    children = [
+      {Furlex.Oembed, [name: Furlex.Oembed]}
+    ]
 
     opts = [strategy: :one_for_one, name: Furlex.Supervisor]
-
-    children = [
-      worker(Furlex.Oembed, [[name: Furlex.Oembed]])
-    ]
 
     Supervisor.start_link(children, opts)
   end
