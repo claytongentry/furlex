@@ -5,17 +5,19 @@ defmodule Furlex.Parser.HTML do
 
   @spec parse(String.t()) :: nil | {:ok, Map.t()}
   def parse(html) do
-    case Floki.find(html, "meta[name]") do
-      nil ->
-        {:ok, %{}}
+    with {:ok, document} <- Floki.parse_document(html) do
+      case Floki.find(document, "meta[name]") do
+        nil ->
+          {:ok, %{}}
 
-      elements ->
-        content =
-          elements
-          |> filter_other()
-          |> Enum.reduce(%{}, &to_map/2)
+        elements ->
+          content =
+            elements
+            |> filter_other()
+            |> Enum.reduce(%{}, &to_map/2)
 
-        {:ok, content}
+          {:ok, content}
+      end
     end
   end
 
