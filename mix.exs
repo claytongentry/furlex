@@ -33,13 +33,13 @@ defmodule Furlex.Mixfile do
 
   defp deps do
     [
-      {:floki, "~> 0.17.0"},
+      {:floki, "~> 0.29.0"},
       {:httpoison, "~> 1.5"},
       {:jason, "~> 1.0", optional: true},
-      {:plug_cowboy, "~> 1.0 or ~> 2.0"},
-      {:benchee, "~> 0.13", only: :dev},
+      {:plug_cowboy, "~> 2.4.1"},
+      {:benchee, "~> 1.0.1", only: :dev},
       {:ex_doc, "~> 0.19", only: :dev, runtime: false},
-      {:bypass, "~> 0.8", only: :test}
+      {:bypass, "~> 2.1.0", only: :test}
     ]
   end
 
