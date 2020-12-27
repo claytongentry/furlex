@@ -18,8 +18,12 @@ defmodule Furlex.Parser do
     |> Map.new()
     |> group_keys()
   end
+
   def extract(tag, html, match) do
-    case Floki.find(html, match.(tag)) do
+    html
+    |> Floki.parse_document!()
+    |> Floki.find(match.(tag))
+    |> case do
       nil      -> nil
       elements ->
         content =
@@ -36,7 +40,10 @@ defmodule Furlex.Parser do
   @doc "Extracts a canonical url from the given raw HTML"
   @spec extract_canonical(String.t) :: nil | String.t
   def extract_canonical(html) do
-    case Floki.find(html, "link[rel=\"canonical\"]") do
+    html
+    |> Floki.parse_document!()
+    |> Floki.find("link[rel=\"canonical\"]")
+    |> case do
       []       -> nil
       elements ->
         elements
