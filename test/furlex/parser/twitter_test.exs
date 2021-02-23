@@ -6,12 +6,15 @@ defmodule Furlex.Parser.TwitterTest do
   doctest Twitter
 
   test "parses Twitter Cards" do
-    html = "<html><head><meta name=\"twitter:image\" " <>
-           "content=\"www.example.com\"/></head></html>"
+    html =
+      "<html><head><meta name=\"twitter:image\" " <>
+        "content=\"www.example.com\"/></head></html>"
 
-     assert {:ok, %{
-       "twitter" => %{
-         "image" => "www.example.com"
-     }}} == Twitter.parse(html)
+    assert {:ok,
+            %{
+              "twitter" => %{
+                "image" => "www.example.com"
+              }
+            }} == Twitter.parse(html)
   end
 end

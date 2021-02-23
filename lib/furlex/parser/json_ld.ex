@@ -3,12 +3,16 @@ defmodule Furlex.Parser.JsonLD do
 
   @json_library Application.get_env(:furlex, :json_library, Jason)
 
-  @spec parse(String.t) :: nil | {:ok, List.t}
+  @spec parse(String.t()) :: nil | {:ok, List.t()}
   def parse(html) do
     meta = "script[type=\"application/ld+json\"]"
 
-    case Floki.find(html, meta) do
-      nil      ->
+    html
+    |> Floki.parse_document()
+    |> elem(1)
+    |> Floki.find(meta)
+    |> case do
+      nil ->
         {:ok, []}
 
       elements ->

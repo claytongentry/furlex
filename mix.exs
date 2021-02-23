@@ -6,8 +6,8 @@ defmodule Furlex.Mixfile do
       app: :furlex,
       version: "0.4.3",
       elixir: "~> 1.4",
-      build_embedded: Mix.env == :prod,
-      start_permanent: Mix.env == :prod,
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
       description: description(),
       package: package(),
       deps: deps(),
@@ -33,15 +33,13 @@ defmodule Furlex.Mixfile do
 
   defp deps do
     [
-      {:floki, "~> 0.17.0"},
-      {:httpoison, "~> 1.5"},
-      {:jason, "~> 1.0", optional: true},
-      {:plug_cowboy, "~> 1.0 or ~> 2.0"},
-
-      {:benchee, "~> 0.13", only: :dev},
-      {:ex_doc, "~> 0.19", only: :dev, runtime: false},
-
-      {:bypass, "~> 0.8", only: :test},
+      {:floki, "~> 0.30.0"},
+      {:httpoison, "~> 1.8"},
+      {:jason, "~> 1.2"},
+      {:plug_cowboy, "~> 2.0"},
+      {:benchee, "~> 1.0", only: :dev},
+      {:ex_doc, "~> 0.23", only: :dev, runtime: false},
+      {:bypass, "~> 2.1", only: :test}
     ]
   end
 
@@ -62,7 +60,7 @@ defmodule Furlex.Mixfile do
       licenses: ["Apache 2.0"],
       links: %{
         "Github" => "http://github.com/claytongentry/furlex",
-        "Docs"   => "http://hexdocs.pm/furlex",
+        "Docs" => "http://hexdocs.pm/furlex"
       }
     ]
   end

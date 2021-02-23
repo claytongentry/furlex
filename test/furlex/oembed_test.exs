@@ -5,31 +5,31 @@ defmodule Furlex.OembedTest do
 
   setup do
     bypass = Bypass.open()
-    url    = "http://localhost:#{bypass.port}"
-    config = Application.get_env :furlex, Oembed, []
+    url = "http://localhost:#{bypass.port}"
+    config = Application.get_env(:furlex, Oembed, [])
 
-    new_config = Keyword.put config, :oembed_host, url
-    Application.put_env :furlex, Oembed, new_config
+    new_config = Keyword.put(config, :oembed_host, url)
+    Application.put_env(:furlex, Oembed, new_config)
 
-    on_exit fn ->
-      Application.put_env :furlex, Oembed, config
+    on_exit(fn ->
+      Application.put_env(:furlex, Oembed, config)
 
       :ok
-    end
+    end)
 
     {:ok, bypass: bypass}
   end
 
   test "returns endpoint from url", %{bypass: bypass} do
-    Bypass.expect bypass, &handle/1
+    Bypass.expect(bypass, &handle/1)
 
     assert {:error, :no_oembed_provider} ==
-      Oembed.endpoint_from_url("foobar")
+             Oembed.endpoint_from_url("foobar")
 
-    url    = "https://vimeo.com/88856141"
+    url = "https://vimeo.com/88856141"
     params = %{"format" => "json"}
 
-    {:ok, endpoint} = Oembed.endpoint_from_url(url, params, [skip_cache?: true])
+    {:ok, endpoint} = Oembed.endpoint_from_url(url, params, skip_cache?: true)
 
     assert endpoint == "https://vimeo.com/api/oembed.json"
   end
@@ -42,6 +42,6 @@ defmodule Furlex.OembedTest do
       |> Path.join()
       |> File.read!()
 
-    Plug.Conn.resp conn, 200, providers
+    Plug.Conn.resp(conn, 200, providers)
   end
 end
