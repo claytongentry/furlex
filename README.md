@@ -11,7 +11,7 @@ Add `:furlex` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:furlex, "~> 0.4.3"}]
+  [{:furlex, "~> 0.5.0"}]
 end
 ```
 
@@ -30,6 +30,7 @@ config :furlex, :json_library, YourLibraryOfChoice
 ```
 
 ## Usage
+
 To unfurl a url, simply pass it to `Furlex.unfurl/1`
 
 ```elixir
@@ -87,6 +88,7 @@ iex(1)> Furlex.unfurl "https://www.youtube.com/watch?v=Gh6H7Md_L2k"
 ```
 
 ## Configuration
+
 Furlex accepts a few optional configuration parameters.
 
 You may configure additional tags to capture under the Facebook
@@ -107,15 +109,17 @@ config :furlex, group_keys?: true
 ```
 
 If this option is set to false or unconfigured, Furlex will return values mapped directly beneath OpenGraph and TwitterCard keys, i.e.
- ```elixir
- %Furlex{twitter: %{
-   "twitter:app:id:googleplay" => "com.google.android.youtube",
-   "twitter:app:id:ipad"       => "544007664",
-   "twitter:app:id:iphone"     => "544007664"
- }}
+
+```elixir
+%Furlex{twitter: %{
+  "twitter:app:id:googleplay" => "com.google.android.youtube",
+  "twitter:app:id:ipad"       => "544007664",
+  "twitter:app:id:iphone"     => "544007664"
+}}
 ```
 
 If true, Furlex will return values grouped into colon-delimited map structures, i.e.
+
 ```elixir
 %Furlex{twitter: %{
   "twitter" => %{
@@ -131,14 +135,17 @@ If true, Furlex will return values grouped into colon-delimited map structures, 
 ```
 
 ## License
+
 Copyright 2017 Clayton Gentry
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
+
 ```
 http://www.apache.org/licenses/LICENSE-2.0`
 ```
+
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.

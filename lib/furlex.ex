@@ -34,12 +34,10 @@ defmodule Furlex do
 
   @doc false
   def start(_type, _args) do
-    import Supervisor.Spec
-
     opts = [strategy: :one_for_one, name: Furlex.Supervisor]
 
     children = [
-      worker(Furlex.Oembed, [[name: Furlex.Oembed]])
+      Furlex.Oembed
     ]
 
     Supervisor.start_link(children, opts)
@@ -90,11 +88,11 @@ defmodule Furlex do
     parse = &Task.async(&1, :parse, [body])
     tasks = Enum.map([Facebook, Twitter, JsonLD, HTML, CustomHTML], parse)
 
-    with [facebook, twitter, json_ld, other, html] <- Task.yield_many(tasks, 30_000),
+    with [facebook, twitter, json_ld, other, html] <- Task.yield_many(tasks),
          {_facebook, {:ok, {:ok, facebook}}} <- facebook,
          {_twitter, {:ok, {:ok, twitter}}} <- twitter,
          {_json_ld, {:ok, {:ok, json_ld}}} <- json_ld,
-         {_json_ld, {:ok, {:ok, html}}} <- html,
+         {_html, {:ok, {:ok, html}}} <- html,
          {_other, {:ok, {:ok, other}}} <- other do
       {:ok,
        %{

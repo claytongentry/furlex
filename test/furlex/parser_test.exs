@@ -6,24 +6,25 @@ defmodule Furlex.ParserTest do
   doctest Parser
 
   setup do
-    Application.put_env :furlex, :group_keys?, true
+    Application.put_env(:furlex, :group_keys?, true)
   end
 
   test "extracts tags from html" do
     html = """
       <html><head><meta name=\"foobar\" content=\"foobaz\" /></head></html>
-     """
+    """
 
-     tags = Parser.extract ["foobar"], html, &("meta[name=\"#{&1}\"]")
+    tags = Parser.extract(["foobar"], html, &"meta[name=\"#{&1}\"]")
 
-     assert tags["foobar"] == "foobaz"
+    assert tags["foobar"] == "foobaz"
   end
 
   test "extracts canonical url from html" do
-    html = "<html><head><link rel=\"canonical\" " <>
-           "href=\"www.example.com\"/></head></html>"
+    html =
+      "<html><head><link rel=\"canonical\" " <>
+        "href=\"www.example.com\"/></head></html>"
 
-    assert is_nil Parser.extract_canonical("foobar")
+    assert is_nil(Parser.extract_canonical("foobar"))
     assert Parser.extract_canonical(html) == "www.example.com"
   end
 
@@ -39,19 +40,19 @@ defmodule Furlex.ParserTest do
     result = Parser.group_keys(map)
 
     assert result == %{
-      "twitter" => %{
-        "app" => %{
-          "id" => %{
-            "googleplay" => "com.google.android.youtube",
-            "ipad" => "544007664"
-          },
-          "name" => %{
-            "googleplay" => "YouTube",
-            "iphone" => "YouTube"
-          }
-        },
-        "card" => "player"
-      }
-    }
+             "twitter" => %{
+               "app" => %{
+                 "id" => %{
+                   "googleplay" => "com.google.android.youtube",
+                   "ipad" => "544007664"
+                 },
+                 "name" => %{
+                   "googleplay" => "YouTube",
+                   "iphone" => "YouTube"
+                 }
+               },
+               "card" => "player"
+             }
+           }
   end
 end
