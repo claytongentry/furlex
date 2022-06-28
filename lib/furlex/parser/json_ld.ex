@@ -8,8 +8,8 @@ defmodule Furlex.Parser.JsonLD do
     meta = "script[type=\"application/ld+json\"]"
 
     html
-    |> Floki.parse_document()
-    |> elem(1)
+    # |> Floki.parse_document()
+    # |> elem(1)
     |> Floki.find(meta)
     |> case do
       nil ->

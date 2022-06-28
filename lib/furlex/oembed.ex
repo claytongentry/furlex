@@ -4,7 +4,8 @@ defmodule Furlex.Oembed do
   """
 
   use GenServer
-  use Tesla
+
+  alias Furlex.Fetcher
 
   require Logger
 
@@ -20,14 +21,20 @@ defmodule Furlex.Oembed do
   def fetch_providers(type \\ :soft)
 
   def fetch_providers(:hard) do
-    case get("https://oembed.com/providers.json") do
-      {:ok, %{body: providers}} ->
-        GenServer.cast(__MODULE__, {:providers, providers})
-        {:ok, providers}
+    case Fetcher.fetch("https://oembed.com/providers.json") do
+      {:ok, providers, 200} ->
+
+        with {:ok, providers} <- Jason.decode(providers) do
+          GenServer.cast(__MODULE__, {:providers, providers})
+          {:ok, providers}
+        else error ->
+          Logger.error("Could not parse providers: #{inspect(error)}")
+          {:error, :providers_parse_error}
+        end
 
       other ->
         Logger.error("Could not fetch providers: #{inspect(other)}")
-        {:error, :fetch_error}
+        {:error, :providers_fetch_error}
     end
   end
 
@@ -128,4 +135,6 @@ defmodule Furlex.Oembed do
   defp oembed_host do
     config(:oembed_host) || "https://oembed.com"
   end
+
+
 end

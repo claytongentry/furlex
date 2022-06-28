@@ -20,8 +20,8 @@ defmodule Furlex.Parser do
 
   def extract(tag, html, match) do
     html
-    |> Floki.parse_document()
-    |> elem(1)
+    # |> Floki.parse_document()
+    # |> elem(1)
     |> Floki.find(match.(tag))
     |> case do
       nil ->
@@ -43,8 +43,8 @@ defmodule Furlex.Parser do
   @spec extract_canonical(String.t()) :: nil | String.t()
   def extract_canonical(html) do
     html
-    |> Floki.parse_document()
-    |> elem(1)
+    # |> Floki.parse_document()
+    # |> elem(1)
     |> Floki.find("link[rel=\"canonical\"]")
     |> case do
       [] ->

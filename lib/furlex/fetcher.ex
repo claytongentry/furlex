@@ -2,6 +2,8 @@ defmodule Furlex.Fetcher do
   @moduledoc """
   A module for fetching body data for a given url
   """
+  use Tesla
+  plug Tesla.Middleware.FollowRedirects, max_redirects: 3
 
   require Logger
 
@@ -14,7 +16,7 @@ defmodule Furlex.Fetcher do
   """
   @spec fetch(String.t(), List.t()) :: {:ok, String.t(), Integer.t()} | {:error, Atom.t()}
   def fetch(url, opts \\ []) do
-    case Tesla.get(url, opts) do
+    case get(url, opts) do
       {:ok, %{body: body, status: status_code}} -> {:ok, body, status_code}
       other                                     -> other
     end
@@ -25,19 +27,18 @@ defmodule Furlex.Fetcher do
   """
   @spec fetch_oembed(String.t(), List.t()) :: {:ok, String.t()} | {:ok, nil} | {:error, Atom.t()}
   def fetch_oembed(url, opts \\ []) do
-    with {:ok, endpoint} <- Oembed.endpoint_from_url(url),
-         params           = %{"url" => url},
-         opts             = Keyword.put(opts, :params, params),
-         {:ok, response} <- Tesla.get(endpoint, opts),
-         {:ok, body}     <- @json_library.decode(response.body)
+    detect_endpoint = Oembed.endpoint_from_url(url)
+    with {:ok, endpoint} <- detect_endpoint,
+         {:ok, body, 200} <- fetch(endpoint, Keyword.put(opts, :query, %{"url" => url})),
+         {:ok, data}     <- @json_library.decode(body)
     do
-      {:ok, body}
+      {:ok, data}
     else
       {:error, :no_oembed_provider} ->
         {:ok, nil}
 
       other ->
-        "Could not fetch oembed for #{inspect(url)}: #{inspect(other)}"
+        "Could not fetch oembed for #{inspect(url)} from #{inspect detect_endpoint}: #{inspect(other)}"
         |> Logger.error()
 
         {:ok, nil}

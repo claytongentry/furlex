@@ -9,21 +9,22 @@ defmodule Furlex do
   use Application
 
   alias Furlex.{Fetcher, Parser}
-  alias Furlex.Parser.{Facebook, HTML, JsonLD, Twitter, CustomHTML}
+  alias Furlex.Parser.{Facebook, HTML, JsonLD, Twitter}
 
   defstruct [
     :canonical_url,
+    :favicon,
     :oembed,
     :facebook,
     :twitter,
     :json_ld,
-    :html,
     :other,
     :status_code
   ]
 
   @type t :: %__MODULE__{
           canonical_url: String.t(),
+          favicon: String.t(),
           oembed: nil | Map.t(),
           facebook: Map.t(),
           twitter: Map.t(),
@@ -49,7 +50,7 @@ defmodule Furlex do
   unfurl/1 fetches oembed data if applicable to the given url's host,
   in addition to Twitter Card, Open Graph, JSON-LD and other HTML meta tags.
 
-  unfurl/2 also accepts a keyword list that will be passed to HTTPoison.
+  unfurl/2 also accepts opts as a keyword list that will be passed to the fetcher.
   """
   @spec unfurl(String.t(), Keyword.t()) :: {:ok, __MODULE__.t()} | {:error, Atom.t()}
   def unfurl(url, opts \\ []) do
@@ -59,11 +60,11 @@ defmodule Furlex do
       {:ok,
        %__MODULE__{
          canonical_url: Parser.extract_canonical(body),
+         favicon: maybe_favicon(url, body),
          oembed: oembed,
          facebook: results.facebook,
          twitter: results.twitter,
          json_ld: results.json_ld,
-         html: results.html,
          other: results.other,
          status_code: status_code
        }}
@@ -86,24 +87,34 @@ defmodule Furlex do
 
   defp parse(body) do
     parse = &Task.async(&1, :parse, [body])
-    tasks = Enum.map([Facebook, Twitter, JsonLD, HTML, CustomHTML], parse)
+    tasks = Enum.map([Facebook, Twitter, JsonLD, HTML], parse)
 
-    with [facebook, twitter, json_ld, other, html] <- Task.yield_many(tasks),
+    with [facebook, twitter, json_ld, other] <- Task.yield_many(tasks),
          {_facebook, {:ok, {:ok, facebook}}} <- facebook,
          {_twitter, {:ok, {:ok, twitter}}} <- twitter,
          {_json_ld, {:ok, {:ok, json_ld}}} <- json_ld,
-         {_html, {:ok, {:ok, html}}} <- html,
          {_other, {:ok, {:ok, other}}} <- other do
       {:ok,
        %{
          facebook: facebook,
          twitter: twitter,
          json_ld: json_ld,
-         html: html,
          other: other
        }}
     else
       _ -> {:error, :parse_error}
     end
   end
+
+  def maybe_favicon(url, body) do
+    if Code.ensure_loaded?(FetchFavicon) do
+      with {:ok, url} <-  FetchFavicon.find(url, body) do
+        url
+      else _ ->
+        nil
+      end
+    end
+
+  end
+
 end

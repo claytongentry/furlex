@@ -1,9 +1,7 @@
-defmodule Furlex.Parser.CustomHTMLTest do
+defmodule Furlex.Parser.CommonHTMLTest do
   use ExUnit.Case
 
-  alias Furlex.Parser.CustomHTML
-
-  doctest CustomHTML
+  alias Furlex.Parser.HTML
 
   test "parses CustomHTML meta data" do
     html =
@@ -11,7 +9,7 @@ defmodule Furlex.Parser.CustomHTMLTest do
       |> Path.join()
       |> File.read!()
 
-    assert {:ok, meta} = CustomHTML.parse(html)
+    assert {:ok, meta} = HTML.parse(html)
     assert meta == %{
       "title" => "Test HTML",
       "description" => "This is test content."
@@ -24,7 +22,8 @@ defmodule Furlex.Parser.CustomHTMLTest do
       |> Path.join()
       |> File.read!()
 
-    assert {:ok, meta} = CustomHTML.parse(html)
+    assert {:ok, meta} = HTML.parse(html)
+    # IO.inspect(meta)
 
     assert meta["generator"] == "Loja Integrada"
     assert meta["google-site-verification"] == [
