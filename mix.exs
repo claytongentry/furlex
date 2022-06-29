@@ -42,7 +42,7 @@ defmodule Furlex.Mixfile do
       {:ex_doc, "~> 0.28", only: :dev, runtime: false},
       {:bypass, "~> 2.1", only: :test},
       # {:fetch_favicon, "~> 0.1.3"},
-      {:fetch_favicon, git: "https://github.com/bonfire-networks/fetch_favicon#master", branch: "master"}
+      {:fetch_favicon, git: "https://github.com/bonfire-networks/fetch_favicon", branch: "master"}
     ]
   end
 
