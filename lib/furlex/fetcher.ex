@@ -23,7 +23,7 @@ defmodule Furlex.Fetcher do
   end
 
   @doc """
-  Fetches oembed data for the given url
+  Fetches oembed data for the given url if it comes from a known provider
   """
   @spec fetch_oembed(String.t(), List.t()) :: {:ok, String.t()} | {:ok, nil} | {:error, Atom.t()}
   def fetch_oembed(url, opts \\ []) do
@@ -42,6 +42,27 @@ defmodule Furlex.Fetcher do
         |> Logger.error()
 
         {:ok, nil}
+    end
+  end
+
+  @doc """
+  Looks for an oembed link in the HTML of the given url and fetches it
+  """
+  def detect_and_fetch_oembed(url, html, opts \\ []) do
+    with {:ok, endpoint} <- Oembed.endpoint_from_html(html),
+         {:ok, body, 200} <- fetch(endpoint),
+         {:ok, data}     <- @json_library.decode(body)
+    do
+      data
+    else
+      {:error, :no_oembed_provider} ->
+        nil
+
+      other ->
+        "Could not find an oembed for #{inspect(url)}: #{inspect(other)}"
+        |> Logger.error()
+
+        nil
     end
   end
 end

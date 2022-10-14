@@ -79,7 +79,10 @@ defmodule Furlex do
     with [fetch, fetch_oembed] <- yield,
          {_fetch, {:ok, {:ok, body, status_code}}} <- fetch,
          {_fetch_oembed, {:ok, {:ok, oembed}}} <- fetch_oembed do
-      {:ok, {body, status_code}, oembed}
+      {:ok,
+        {body, status_code},
+        oembed || Fetcher.detect_and_fetch_oembed(url, body, opts) # if no oembed was found from a known provider, try via the HTML
+      }
     else
       _ -> {:error, :fetch_error}
     end

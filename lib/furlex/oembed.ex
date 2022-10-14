@@ -67,6 +67,23 @@ defmodule Furlex.Oembed do
     end
   end
 
+  def endpoint_from_html(html) do
+    case parse_html_for_oembed(html) do
+      {_, provider} ->
+        {:ok, provider}
+      _ ->
+        {:error, :no_oembed_provider}
+    end
+  end
+
+  defp parse_html_for_oembed(html) do
+    doc = html
+    |> Floki.parse_document()
+    |> elem(1)
+
+    (Furlex.Parser.extract("application/json+oembed", doc, &"link[type=\"#{&1}\"]", "href") || Furlex.Parser.extract("text/xml+oembed", doc, &"link[type=\"#{&1}\"]", "href"))
+  end
+
   # Maps a url to a provider, or returns nil if no such provider exists
   defp provider_from_url(url, opts) do
     fetch_type = if Keyword.get(opts, :skip_cache?, false), do: :hard, else: :soft
