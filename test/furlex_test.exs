@@ -8,11 +8,14 @@ defmodule FurlexTest do
     oembed = Furlex.Oembed
     oembed_config = Application.get_env(:furlex, oembed, [])
     new_config = Keyword.put(oembed_config, :oembed_host, url)
+    group_keys_config = Application.get_env(:furlex, :group_keys?)
 
     Application.put_env(:furlex, oembed, new_config)
+    Application.put_env(:furlex, :group_keys?, true)
 
     on_exit(fn ->
       Application.put_env(:furlex, oembed, oembed_config)
+      Application.put_env(:furlex, :group_keys?, group_keys_config)
 
       :ok
     end)
