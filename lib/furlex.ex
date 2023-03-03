@@ -56,10 +56,11 @@ defmodule Furlex do
   def unfurl(url, opts \\ []) do
     with {:ok, {body, status_code}, oembed} <- fetch(url, opts),
          {:ok, body} <- Floki.parse_document(body),
-         {:ok, results} <- parse(body) do
+         {:ok, results} <- parse(body),
+         canonical_url <- Parser.extract_canonical(body) do
       {:ok,
        %__MODULE__{
-         canonical_url: Parser.extract_canonical(body),
+         canonical_url: (if canonical_url !=url, do: canonical_url),
          favicon: maybe_favicon(url, body),
          oembed: oembed,
          facebook: results.facebook,
