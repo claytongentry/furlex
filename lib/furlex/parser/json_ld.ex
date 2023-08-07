@@ -20,6 +20,7 @@ defmodule Furlex.Parser.JsonLD do
           elements
           |> Enum.map(&decode/1)
           |> List.flatten()
+          |> Enum.uniq()
 
         {:ok, json_ld}
     end
