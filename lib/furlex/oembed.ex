@@ -91,8 +91,11 @@ defmodule Furlex.Oembed do
     {:ok, providers} = fetch_providers(fetch_type)
 
     case URI.parse(url) do
-      %URI{host: nil} ->
+      %URI{host: nil, path: nil} ->
         nil
+
+      %URI{scheme: nil, host: nil, path: host_detected_as_path} ->
+        Enum.find(providers, &host_matches?(host_detected_as_path, &1))
 
       %URI{host: host} ->
         Enum.find(providers, &host_matches?(host, &1))

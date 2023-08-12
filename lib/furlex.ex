@@ -73,19 +73,33 @@ defmodule Furlex do
   end
 
   defp fetch(url, opts) do
-    fetch = Task.async(Fetcher, :fetch, [url, opts])
     fetch_oembed = Task.async(Fetcher, :fetch_oembed, [url, opts])
-    yield = Task.yield_many([fetch, fetch_oembed])
+    fetch = Task.async(Fetcher, :fetch, [url, opts])
 
-    with [fetch, fetch_oembed] <- yield,
-         {_fetch, {:ok, {:ok, body, status_code}}} <- fetch,
-         {_fetch_oembed, {:ok, {:ok, oembed}}} <- fetch_oembed do
-      {:ok,
-        {body, status_code},
-        oembed || Fetcher.detect_and_fetch_oembed(url, body, opts) # if no oembed was found from a known provider, try via the HTML
-      }
+    with [fetch_oembed, fetch] <- Task.yield_many([fetch_oembed, fetch], timeout: 3000, on_timeout: :kill_task) do
+      case [fetch_oembed, fetch] do
+        [{_fetch_oembed, {:ok, {:ok, oembed}}}, {_fetch, {:ok, {:ok, body, status_code}}}] ->
+
+        {:ok, {body, status_code}, oembed || Fetcher.detect_and_fetch_oembed(url, body, opts)} # if no oembed was found from a known provider, try via the HTML
+
+      [{_fetch_oembed, {:ok, {:ok, oembed}}}, other] ->
+        IO.warn(inspect other)
+        {:ok, {nil, nil}, oembed} #  oembed was found from a known provider
+
+      [other, {_fetch, {:ok, {:ok, body, status_code}}}] ->
+        IO.warn(inspect other)
+        {:ok, {body, status_code}, Fetcher.detect_and_fetch_oembed(url, body, opts)} # if no oembed was found from a known provider, try via the HTML
+
+      [other, other2] ->
+        IO.warn(inspect other)
+        IO.warn(inspect other2)
+        {:error, :fetch_error}
+
+      end
     else
-      _ -> {:error, :fetch_error}
+      other -> 
+        IO.warn(inspect other)
+        {:error, :fetch_error}
     end
   end
 

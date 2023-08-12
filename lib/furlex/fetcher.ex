@@ -16,6 +16,20 @@ defmodule Furlex.Fetcher do
   """
   @spec fetch(String.t(), List.t()) :: {:ok, String.t(), Integer.t()} | {:error, Atom.t()}
   def fetch(url, opts \\ []) do
+    case URI.parse(url) do
+      %URI{host: nil, path: nil} ->
+        IO.warn("expected a valid URI, but got #{url}")
+        {:error, :invalid_uri}
+
+      %URI{scheme: nil, host: nil, path: host_detected_as_path} ->
+        do_fetch("http://#{url}", opts)
+
+      %URI{} ->
+        do_fetch(url, opts)
+    end
+  end
+
+  defp do_fetch(url, opts \\ []) do
     case get(url, opts) do
       {:ok, %{body: body, status: status_code}} -> {:ok, body, status_code}
       other                                     -> other
@@ -23,7 +37,7 @@ defmodule Furlex.Fetcher do
   end
 
   @doc """
-  Fetches oembed data for the given url if it comes from a known provider
+  Fetches oembed data for the given url *if* it comes from a known provider
   """
   @spec fetch_oembed(String.t(), List.t()) :: {:ok, String.t()} | {:ok, nil} | {:error, Atom.t()}
   def fetch_oembed(url, opts \\ []) do
