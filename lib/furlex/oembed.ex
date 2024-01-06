@@ -12,6 +12,60 @@ defmodule Furlex.Oembed do
   @json_library Application.get_env(:furlex, :json_library, Jason)
 
   @doc """
+  Fetches oembed data for the given url *if* it comes from a known provider
+  """
+  @spec fetch(String.t(), List.t()) :: {:ok, String.t()} | {:ok, nil} | {:error, Atom.t()}
+  def fetch(url, opts \\ []) do
+    detect_endpoint = endpoint_from_url(url)
+    with {:ok, endpoint} <- detect_endpoint,
+         {:ok, data}     <- do_fetch_from_endpoint(endpoint, url)
+    do
+      {:ok, data}
+    else
+      {:error, :no_oembed_provider} ->
+        {:ok, nil}
+
+      other ->
+        "Could not fetch oembed for #{inspect(url)} from #{inspect detect_endpoint}: #{inspect(other)}"
+        |> Logger.error()
+
+        {:ok, nil}
+    end
+  end
+
+  @doc """
+  Looks for an oembed link in the HTML of the given url and fetches it
+  """
+  def detect_and_fetch(url, html, opts \\ []) do
+    with {:ok, endpoint} <- endpoint_from_html(html),
+         {:ok, data}     <- do_fetch_from_endpoint(endpoint, url)
+    do
+      data
+    else
+      {:error, :no_oembed_provider} ->
+        nil
+
+      other ->
+        "Could not find an oembed for #{inspect(url)}: #{inspect(other)}"
+        |> Logger.error()
+
+        nil
+    end
+  end
+
+  defp do_fetch_from_endpoint({mod, fun}, url) when is_atom(mod) and is_atom(fun) do
+    apply(mod, fun, [url])
+  end
+  defp do_fetch_from_endpoint(fun, url) when is_function(fun) do
+    fun.(url)
+  end
+  defp do_fetch_from_endpoint(endpoint, _url) do
+    with {:ok, body, 200} <- Fetcher.fetch(endpoint) do 
+      @json_library.decode(body)
+    end
+  end
+
+  @doc """
   Fetches the list of Oembed providers
 
   Soft fetch will fetch cached providers. Hard fetch requests
@@ -25,15 +79,17 @@ defmodule Furlex.Oembed do
       {:ok, providers, 200} ->
 
         with {:ok, providers} <- Jason.decode(providers) do
+          providers = config(:extra_providers) ++ providers
+          Logger.info("Caching oembed providers: #{inspect(providers)}")
           GenServer.cast(__MODULE__, {:providers, providers})
           {:ok, providers}
         else error ->
-          Logger.error("Could not parse providers: #{inspect(error)}")
+          Logger.error("Could not parse oembed providers: #{inspect(error)}")
           {:error, :providers_parse_error}
         end
 
       other ->
-        Logger.error("Could not fetch providers: #{inspect(other)}")
+        Logger.error("Could not fetch oembed providers: #{inspect(other)}")
         {:error, :providers_fetch_error}
     end
   end
@@ -63,7 +119,7 @@ defmodule Furlex.Oembed do
         {:error, :no_oembed_provider}
 
       provider ->
-        endpoint_from_provider(provider, params)
+        {:ok, endpoint_from_provider(provider, url, params) |> IO.inspect}
     end
   end
 
@@ -102,18 +158,45 @@ defmodule Furlex.Oembed do
     end
   end
 
-  defp endpoint_from_provider(provider, params) do
-    [endpoint | _] = provider["endpoints"]
+  defp endpoint_from_provider(%{"fetch_function" => fetch_function} = _provider, url, _params) when is_function(fetch_function) do
+    fetch_function
+  end
+  defp endpoint_from_provider(%{"fetch_function" => {mod, fun}} = _provider, url, _params) do
+    {mod, fun}
+  end
+  defp endpoint_from_provider(%{"endpoints" => endpoints} = _provider, url, params) do
+    [endpoint | _] = endpoints
+    # TODO: support multiple endpoints?
 
-    url = endpoint["url"]
-    regex = ~r/{(.*?)}/
-    url = Regex.replace(regex, url, fn _, key -> params[key] end)
+    endpoint_url = Regex.replace(~r/{(.*?)}/, endpoint["url"], fn _, key -> params[key] end)
 
-    {:ok, url}
+    if endpoint["append_url"] do 
+      "#{endpoint_url}#{url}"
+    else
+      URI.append_query(URI.parse(endpoint_url), URI.encode_query(%{"url" => url}))
+    end
   end
 
+  defp host_matches?(host, %{"provider_url" => provider_url, "endpoints"=> endpoints}) when is_list(endpoints) do
+    String.contains?(provider_url, host) or an_endpoint_matches?(host, endpoints)
+  end
   defp host_matches?(host, %{"provider_url" => provider_url}) do
     String.contains?(provider_url, host)
+  end
+  defp host_matches?(host, %{"endpoints"=> endpoints}) when is_list(endpoints) do
+    an_endpoint_matches?(host, endpoints)
+  end
+
+  defp an_endpoint_matches?(host, endpoints) do
+    Enum.any?(endpoints, fn endpoint ->
+
+      endpoint
+      |> Map.get("schemes", []) 
+      |> Enum.any?(fn scheme -> 
+        String.contains?(scheme, host)
+    end)
+      
+    end)
   end
 
   ## GenServer callbacks

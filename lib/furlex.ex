@@ -8,7 +8,7 @@ defmodule Furlex do
 
   use Application
 
-  alias Furlex.{Fetcher, Parser}
+  alias Furlex.{Fetcher, Parser, Oembed}
   alias Furlex.Parser.{Facebook, HTML, JsonLD, Twitter}
 
   defstruct [
@@ -73,14 +73,14 @@ defmodule Furlex do
   end
 
   defp fetch(url, opts) do
-    fetch_oembed = Task.async(Fetcher, :fetch_oembed, [url, opts])
+    fetch_oembed = Task.async(Oembed, :fetch, [url, opts])
     fetch = Task.async(Fetcher, :fetch, [url, opts])
 
-    with [fetch_oembed, fetch] <- Task.yield_many([fetch_oembed, fetch], timeout: 3000, on_timeout: :kill_task) do
+    with [fetch_oembed, fetch] <- Task.yield_many([fetch_oembed, fetch], timeout: 4000, on_timeout: :kill_task) do
       case [fetch_oembed, fetch] do
         [{_fetch_oembed, {:ok, {:ok, oembed}}}, {_fetch, {:ok, {:ok, body, status_code}}}] ->
 
-        {:ok, {body, status_code}, oembed || Fetcher.detect_and_fetch_oembed(url, body, opts)} # if no oembed was found from a known provider, try via the HTML
+        {:ok, {body, status_code}, oembed || Oembed.detect_and_fetch(url, body, opts)} # if no oembed was found from a known provider, try via the HTML
 
       [{_fetch_oembed, {:ok, {:ok, oembed}}}, other] ->
         IO.warn(inspect other)
@@ -88,7 +88,7 @@ defmodule Furlex do
 
       [other, {_fetch, {:ok, {:ok, body, status_code}}}] ->
         IO.warn(inspect other)
-        {:ok, {body, status_code}, Fetcher.detect_and_fetch_oembed(url, body, opts)} # if no oembed was found from a known provider, try via the HTML
+        {:ok, {body, status_code}, Oembed.detect_and_fetch(url, body, opts)} # if no oembed was found from a known provider, try via the HTML
 
       [other, other2] ->
         IO.warn(inspect other)

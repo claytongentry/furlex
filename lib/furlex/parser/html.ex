@@ -65,7 +65,7 @@ defmodule Furlex.Parser.HTML do
 
   defp extract_attribute(element, key) do
     case Floki.attribute(element, key) do
-      [attribute] -> Floki.text(attribute, deep: false)
+      [_] = attributes -> Floki.text(attributes, deep: false)
       _ -> nil
     end
   end
