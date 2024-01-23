@@ -23,7 +23,7 @@ defmodule FurlexTest do
   test "unfurls a url", %{bypass: bypass, url: url} do
     Bypass.expect(bypass, &handle/1)
 
-    assert {:ok, %Furlex{} = furlex} = Furlex.unfurl(url)
+    assert {:ok, %{} = furlex} = Furlex.unfurl(url)
 
     assert furlex.status_code == 200
     assert furlex.facebook["og"]["site_name"] == "Vimeo"

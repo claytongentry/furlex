@@ -7,31 +7,10 @@ defmodule Furlex do
   """
 
   use Application
+  import Untangle
 
   alias Furlex.{Fetcher, Parser, Oembed}
   alias Furlex.Parser.{Facebook, HTML, JsonLD, Twitter}
-
-  defstruct [
-    :canonical_url,
-    :favicon,
-    :oembed,
-    :facebook,
-    :twitter,
-    :json_ld,
-    :other,
-    :status_code
-  ]
-
-  @type t :: %__MODULE__{
-          canonical_url: String.t(),
-          favicon: String.t(),
-          oembed: nil | Map.t(),
-          facebook: Map.t(),
-          twitter: Map.t(),
-          json_ld: List.t(),
-          other: Map.t(),
-          status_code: Integer.t()
-        }
 
   @doc false
   def start(_type, _args) do
@@ -52,23 +31,20 @@ defmodule Furlex do
 
   unfurl/2 also accepts opts as a keyword list that will be passed to the fetcher.
   """
-  @spec unfurl(String.t(), Keyword.t()) :: {:ok, __MODULE__.t()} | {:error, Atom.t()}
+  @spec unfurl(String.t(), Keyword.t()) :: {:ok, Map.t()} | {:error, Atom.t()}
   def unfurl(url, opts \\ []) do
-    with {:ok, {body, status_code}, oembed} <- fetch(url, opts),
+    with {:ok, {body, status_code}, oembed_meta} <- fetch(url, opts),
          {:ok, body} <- Floki.parse_document(body),
          {:ok, results} <- parse(body),
          canonical_url <- Parser.extract_canonical(body) do
       {:ok,
-       %__MODULE__{
+      results
+      |> Map.merge(oembed_meta)
+      |> Map.merge(%{
          canonical_url: (if canonical_url !=url, do: canonical_url),
          favicon: maybe_favicon(url, body),
-         oembed: oembed,
-         facebook: results.facebook,
-         twitter: results.twitter,
-         json_ld: results.json_ld,
-         other: results.other,
          status_code: status_code
-       }}
+       })}
     end
   end
 
@@ -126,11 +102,35 @@ defmodule Furlex do
 
   def maybe_favicon(url, body) do
     if Code.ensure_loaded?(FetchFavicon) do
-      with {:ok, url} <-  FetchFavicon.find(url, body) do
-        url
-      else _ ->
+    case URI.parse(url) |> debug() do
+      # %URI{host: nil, path: nil} ->
+      %URI{host: nil} ->
+        warn(url, "expected a valid URI, but got")
+        debug(body)
+        with true <- body !=[],
+        {:ok, url} <- FetchFavicon.find(nil, body) do
+          url
+        else _ ->
+          nil
+        end
+
+      # %URI{scheme: nil, host: nil, path: host_detected_as_path} ->
+      #   with {:ok, url} <- FetchFavicon.find(host_detected_as_path, body) do
+      #   url
+      # else _ ->
+      #   nil
+      # end
+
+      %URI{scheme: "doi"} ->
         nil
-      end
+
+      %URI{} ->
+        FetchFavicon.find(url, body)
+
+
+    end
+
+      
     end
 
   end

@@ -7,7 +7,8 @@ defmodule Furlex.Oembed do
 
   alias Furlex.Fetcher
 
-  require Logger
+  import Untangle
+  use Arrows
 
   @json_library Application.get_env(:furlex, :json_library, Jason)
 
@@ -26,8 +27,7 @@ defmodule Furlex.Oembed do
         {:ok, nil}
 
       other ->
-        "Could not fetch oembed for #{inspect(url)} from #{inspect detect_endpoint}: #{inspect(other)}"
-        |> Logger.error()
+        error(other, "Could not fetch oembed for: #{inspect(url)} - from endpoint: #{inspect detect_endpoint} - with error")
 
         {:ok, nil}
     end
@@ -46,8 +46,7 @@ defmodule Furlex.Oembed do
         nil
 
       other ->
-        "Could not find an oembed for #{inspect(url)}: #{inspect(other)}"
-        |> Logger.error()
+        error(other, "Could not find an oembed for #{inspect(url)}")
 
         nil
     end
@@ -60,8 +59,9 @@ defmodule Furlex.Oembed do
     fun.(url)
   end
   defp do_fetch_from_endpoint(endpoint, _url) do
-    with {:ok, body, 200} <- Fetcher.fetch(endpoint) do 
-      @json_library.decode(body)
+    with {:ok, body, 200} <- Fetcher.fetch(endpoint),
+    {:ok, data} <- @json_library.decode(body) do 
+      {:ok, %{oembed: data}}
     end
   end
 
@@ -79,18 +79,20 @@ defmodule Furlex.Oembed do
       {:ok, providers, 200} ->
 
         with {:ok, providers} <- Jason.decode(providers) do
-          providers = config(:extra_providers) ++ providers
-          Logger.info("Caching oembed providers: #{inspect(providers)}")
+          providers = prepare_providers_regexes(providers ++ config(:extra_providers))
+          info(providers, "Caching oembed providers")
           GenServer.cast(__MODULE__, {:providers, providers})
           {:ok, providers}
         else error ->
-          Logger.error("Could not parse oembed providers: #{inspect(error)}")
-          {:error, :providers_parse_error}
+          error(error, "Could not parse oembed providers")
+          # {:error, :providers_parse_error}
+          {:ok, prepare_providers_regexes(config(:extra_providers))}
         end
 
       other ->
-        Logger.error("Could not fetch oembed providers: #{inspect(other)}")
-        {:error, :providers_fetch_error}
+        error(other, "Could not fetch oembed providers")
+        # {:error, :providers_fetch_error}
+        {:ok, prepare_providers_regexes(config(:extra_providers))}
     end
   end
 
@@ -119,7 +121,7 @@ defmodule Furlex.Oembed do
         {:error, :no_oembed_provider}
 
       provider ->
-        {:ok, endpoint_from_provider(provider, url, params) |> IO.inspect}
+        {:ok, endpoint_from_provider(provider, url, params) |> debug()}
     end
   end
 
@@ -147,15 +149,18 @@ defmodule Furlex.Oembed do
     {:ok, providers} = fetch_providers(fetch_type)
 
     case URI.parse(url) do
-      %URI{host: nil, path: nil} ->
-        nil
-
-      %URI{scheme: nil, host: nil, path: host_detected_as_path} ->
+      %URI{scheme: nil, host: nil, path: host_detected_as_path} when is_binary(host_detected_as_path) ->
         Enum.find(providers, &host_matches?(host_detected_as_path, &1))
+        |> debug()
 
-      %URI{host: host} ->
+      %URI{host: host} when is_binary(host) ->
         Enum.find(providers, &host_matches?(host, &1))
-    end
+        |> debug()
+
+      _ ->
+        nil
+    end || Enum.find(providers, &an_endpoint_matches?(url, &1))
+        |> debug()
   end
 
   defp endpoint_from_provider(%{"fetch_function" => fetch_function} = _provider, url, _params) when is_function(fetch_function) do
@@ -177,26 +182,73 @@ defmodule Furlex.Oembed do
     end
   end
 
-  defp host_matches?(host, %{"provider_url" => provider_url, "endpoints"=> endpoints}) when is_list(endpoints) do
-    String.contains?(provider_url, host) or an_endpoint_matches?(host, endpoints)
-  end
+  # defp host_matches?(host, %{"provider_url" => provider_url, "endpoints"=> endpoints}) when is_list(endpoints) do
+  #   String.contains?(provider_url, host) or an_endpoint_matches?(host, endpoints)
+  # end
   defp host_matches?(host, %{"provider_url" => provider_url}) do
     String.contains?(provider_url, host)
   end
-  defp host_matches?(host, %{"endpoints"=> endpoints}) when is_list(endpoints) do
-    an_endpoint_matches?(host, endpoints)
+
+  defp an_endpoint_matches?(url, %{"endpoints"=> endpoints}) when is_list(endpoints) do
+    an_endpoint_matches?(url, endpoints)
   end
-
-  defp an_endpoint_matches?(host, endpoints) do
+  defp an_endpoint_matches?(url, endpoints) when is_list(endpoints) do
     Enum.any?(endpoints, fn endpoint ->
-
       endpoint
       |> Map.get("schemes", []) 
-      |> Enum.any?(fn scheme -> 
-        String.contains?(scheme, host)
+      |> Enum.any?(fn 
+        fun when is_function(fun, 1) -> fun.(url)
+        |> debug(url)
+        scheme -> 
+        # with {:ok, regex} <- Regex.recompile(scheme) do
+        #   Regex.match?(url, regex)
+        #   |> debug("ran regex for provider")
+        # else 
+        #   e ->
+        #     error(e, "Could not (re)compile regex for provider: #{scheme}")
+            String.match?(url, scheme)
+          # end
     end)
-      
     end)
+  end
+  defp an_endpoint_matches?(url, _) do
+    nil
+  end
+
+  defp prepare_providers_regexes(providers) when is_list(providers) or is_map(providers) do
+    Enum.map(providers, &prepare_provider_regexes/1)
+  end
+  defp prepare_provider_regexes(%{"endpoints"=> endpoints}=provider) when is_list(endpoints) and endpoints !=[]  do
+    Enum.map(endpoints, &prepare_endpoint_regexes/1)
+    |> Map.put(provider, "endpoints", ...)
+  end
+  defp prepare_provider_regexes(provider) do
+    provider
+  end
+  defp prepare_endpoint_regexes(%{"schemes"=> schemes}=endpoint) when is_list(schemes) and schemes !=[] do
+    Enum.map(schemes, &prepare_scheme_regex/1)
+    |> Map.put(endpoint, "schemes", ...)
+  end
+  defp prepare_endpoint_regexes(endpoint) do
+    endpoint
+  end
+  defp prepare_scheme_regex(scheme) when is_binary(scheme) do
+    with {:ok, regex} <- scheme
+    |> String.replace("*", "[^/]+")
+    |> String.replace(".", "\.")
+    |> String.replace("http:", "#https?:")
+    |> String.replace("https:", "#https?:")
+    |> Regex.compile()
+    |> debug(scheme) do
+      regex
+    else
+      e -> 
+        error(e)
+        scheme
+      end
+  end
+  defp prepare_scheme_regex(scheme) do
+    scheme
   end
 
   ## GenServer callbacks
@@ -220,13 +272,6 @@ defmodule Furlex.Oembed do
 
   def process_url(path) do
     oembed_host() <> path
-  end
-
-  def process_response_body(body) do
-    case @json_library.decode(body) do
-      {:ok, body} -> body
-      _error -> body
-    end
   end
 
   defp config(key) do

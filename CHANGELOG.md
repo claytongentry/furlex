@@ -46,7 +46,7 @@
 
 ## v.0.2.1
 
-- Add status code to %Furlex{} structure (thanks [abitdodgy](https://github.com/abitdodgy))
+- Add status code to Furlex's return (thanks [abitdodgy](https://github.com/abitdodgy))
 - Fix compatibility with Phoenix 1.3 (thanks, again, [abitdodgy](https://github.com/abitdodgy)!)
 
 ## v.0.2.0

@@ -36,7 +36,7 @@ To unfurl a url, simply pass it to `Furlex.unfurl/1`
 ```elixir
 iex(1)> Furlex.unfurl "https://www.youtube.com/watch?v=Gh6H7Md_L2k"
 {:ok,
- %Furlex{canonical_url: "https://www.youtube.com/watch?v=Gh6H7Md_L2k",
+ %{canonical_url: "https://www.youtube.com/watch?v=Gh6H7Md_L2k",
   facebook: %{"fb:app_id" => "87741124305",
     "og:description" => "Watch the full episode: https://www.thisoldhouse.com/watch/ask-toh-future-house-offerman Ask This Old House host Kevin O’Connor visits Nick Offerman in Los A...",
     "og:image" => "https://i.ytimg.com/vi/Gh6H7Md_L2k/maxresdefault.jpg",
@@ -111,7 +111,7 @@ config :furlex, group_keys?: true
 If this option is set to false or unconfigured, Furlex will return values mapped directly beneath OpenGraph and TwitterCard keys, i.e.
 
 ```elixir
-%Furlex{twitter: %{
+%{twitter: %{
   "twitter:app:id:googleplay" => "com.google.android.youtube",
   "twitter:app:id:ipad"       => "544007664",
   "twitter:app:id:iphone"     => "544007664"
@@ -121,7 +121,7 @@ If this option is set to false or unconfigured, Furlex will return values mapped
 If true, Furlex will return values grouped into colon-delimited map structures, i.e.
 
 ```elixir
-%Furlex{twitter: %{
+%{twitter: %{
   "twitter" => %{
     "app" => %{
       "id" => %{

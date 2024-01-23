@@ -28,7 +28,10 @@ defmodule Furlex.Parser.HTML do
     case Floki.find(html, "title") do
       nil -> %{}
       title ->
-        %{"title" => Floki.text(title, deep: false)}
+        case Floki.text(title, deep: false) do
+          "" -> %{}
+          title -> %{"title" => title}
+        end
     end
   end
 

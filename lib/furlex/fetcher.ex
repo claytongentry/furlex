@@ -5,7 +5,7 @@ defmodule Furlex.Fetcher do
   use Tesla
   plug Tesla.Middleware.FollowRedirects, max_redirects: 3
 
-  require Logger
+  import Untangle
 
   alias Furlex.Oembed
 
@@ -18,7 +18,10 @@ defmodule Furlex.Fetcher do
   def fetch(url, opts \\ []) do
     case URI.parse(url) do
       %URI{host: nil, path: nil} ->
-        IO.warn("expected a valid URI, but got #{url}")
+        warn(url, "expected a valid URI, but got")
+        {:error, :invalid_uri}
+
+      %URI{scheme: "doi"} ->
         {:error, :invalid_uri}
 
       %URI{scheme: nil, host: nil, path: host_detected_as_path} ->
@@ -34,6 +37,8 @@ defmodule Furlex.Fetcher do
       {:ok, %{body: body, status: status_code}} -> {:ok, body, status_code}
       other                                     -> other
     end
+    rescue
+      e in ArgumentError -> error(e)
   end
 
 
