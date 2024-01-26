@@ -38,8 +38,8 @@ defmodule Furlex do
          {:ok, results} <- parse(body),
          canonical_url <- Parser.extract_canonical(body) do
       {:ok,
-      results
-      |> Map.merge(oembed_meta)
+      (results || %{})
+      |> Map.merge(oembed_meta || %{})
       |> Map.merge(%{
          canonical_url: (if canonical_url !=url, do: canonical_url),
          favicon: maybe_favicon(url, body),
