@@ -33,17 +33,23 @@ defmodule Furlex do
   """
   @spec unfurl(String.t(), Keyword.t()) :: {:ok, Map.t()} | {:error, Atom.t()}
   def unfurl(url, opts \\ []) do
-    with {:ok, {body, status_code}, oembed_meta} <- fetch(url, opts),
-         {:ok, body} <- Floki.parse_document(body),
+    with {:ok, {body, status_code}, oembed_meta} <- fetch(url, opts) |> debug() do
+      unfurl_html(url, body, Enum.into(oembed_meta || %{}, %{
+        status_code: status_code
+       }), opts)
+    end
+  end
+
+  def unfurl_html(url, body, extra, opts \\ []) do
+    with {:ok, body} <- Floki.parse_document(body),
          {:ok, results} <- parse(body),
          canonical_url <- Parser.extract_canonical(body) do
       {:ok,
-      (results || %{})
-      |> Map.merge(oembed_meta || %{})
+      extra
+      |> Map.merge(results || %{})
       |> Map.merge(%{
          canonical_url: (if canonical_url !=url, do: canonical_url),
-         favicon: maybe_favicon(url, body),
-         status_code: status_code
+         favicon: maybe_favicon(url, body)
        })}
     end
   end
