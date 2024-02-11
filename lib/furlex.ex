@@ -33,10 +33,15 @@ defmodule Furlex do
   """
   @spec unfurl(String.t(), Keyword.t()) :: {:ok, Map.t()} | {:error, Atom.t()}
   def unfurl(url, opts \\ []) do
-    with {:ok, {body, status_code}, oembed_meta} <- fetch(url, opts) |> debug() do
+    case fetch(url, opts) 
+          |> debug() do
+     {:ok, {body, status_code}, oembed_meta} when is_binary(body) ->
       unfurl_html(url, body, Enum.into(oembed_meta || %{}, %{
         status_code: status_code
        }), opts)
+
+      other -> 
+        error(other, "Could not fetch any metadata")
     end
   end
 
