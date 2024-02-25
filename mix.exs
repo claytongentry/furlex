@@ -37,7 +37,7 @@ defmodule Furlex.Mixfile do
       {:hackney, "~> 1.17", optional: true}, # optional, but recommended adapter for tesla
       {:floki, "~> 0.32"},
       {:jason, "~> 1.2"},
-      {:plug_cowboy, "~> 2.0"},
+      {:plug_cowboy, "~> 2.6"},
       {:arrows, "~> 0.1"},
       {:untangle, "~> 0.3"},
       {:benchee, "~> 1.0", only: :dev},
