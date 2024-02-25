@@ -12,7 +12,7 @@ defmodule Furlex.Mixfile do
       package: package(),
       deps: deps(),
       name: "Furlex",
-      source_url: "https://github.com/claytongentry/furlex",
+      source_url: "https://github.com/fanhero/furlex",
       docs: [
         main: "Furlex",
         extras: ~w(README.md CHANGELOG.md)
@@ -27,19 +27,24 @@ defmodule Furlex.Mixfile do
     # Specify extra applications you'll use from Erlang/Elixir
     [
       mod: {Furlex, []},
-      extra_applications: [:httpoison, :logger]
+      extra_applications: [:logger]
     ]
   end
 
   defp deps do
     [
-      {:floki, "~> 0.30.0"},
-      {:httpoison, "~> 1.8"},
+      {:tesla, "~> 1.4"},
+      {:hackney, "~> 1.17", optional: true}, # optional, but recommended adapter for tesla
+      {:floki, "~> 0.32"},
       {:jason, "~> 1.2"},
-      {:plug_cowboy, "~> 2.0"},
+      {:plug_cowboy, "~> 2.6"},
+      {:arrows, "~> 0.1"},
+      {:untangle, "~> 0.3"},
       {:benchee, "~> 1.0", only: :dev},
-      {:ex_doc, "~> 0.23", only: :dev, runtime: false},
-      {:bypass, "~> 2.1", only: :test}
+      {:ex_doc, "~> 0.28", only: :dev, runtime: false},
+      {:bypass, "~> 2.1", only: :test},
+      # {:fetch_favicon, "~> 0.1.3"},
+      {:fetch_favicon, git: "https://github.com/bonfire-networks/fetch_favicon", branch: "master"}
     ]
   end
 

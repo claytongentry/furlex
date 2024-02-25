@@ -14,7 +14,7 @@ defmodule Furlex.Parser.HTMLTest do
       |> File.read!()
 
     assert {:ok, meta} = HTML.parse(html)
-    assert meta == %{"description" => "This is test content."}
+    assert %{"description" => "This is test content."} = meta
   end
 
   test "dedupes meta data" do

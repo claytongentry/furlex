@@ -5,26 +5,38 @@ defmodule Furlex.Parser.HTML do
 
   @spec parse(String.t()) :: nil | {:ok, Map.t()}
   def parse(html) do
+    result = get_title(html)
+
     html
-    |> Floki.parse_document()
-    |> elem(1)
+    # |> Floki.parse_document()
+    # |> elem(1)
     |> Floki.find("meta[name]")
     |> case do
       nil ->
-        {:ok, %{}}
+        {:ok, result}
 
       elements ->
-        content =
+        {:ok,
           elements
-          |> filter_other()
-          |> Enum.reduce(%{}, &to_map/2)
+          |> filter_meta()
+          |> Enum.reduce(result, &to_map/2)
+        }
+    end
+  end
 
-        {:ok, content}
+  defp get_title(html) do
+    case Floki.find(html, "title") do
+      nil -> %{}
+      title ->
+        case Floki.text(title, deep: false) do
+          "" -> %{}
+          title -> %{"title" => title}
+        end
     end
   end
 
   # Filter out plain meta elements from Twitter, Facebook, etc.
-  defp filter_other(elements) do
+  defp filter_meta(elements) do
     Enum.reject(elements, fn element ->
       extract_attribute(element, "name") in (Facebook.tags() ++ Twitter.tags())
     end)
@@ -56,7 +68,7 @@ defmodule Furlex.Parser.HTML do
 
   defp extract_attribute(element, key) do
     case Floki.attribute(element, key) do
-      [attribute] -> attribute
+      [_] = attributes -> Floki.text(attributes, deep: false)
       _ -> nil
     end
   end

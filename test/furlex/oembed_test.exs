@@ -21,7 +21,7 @@ defmodule Furlex.OembedTest do
   end
 
   test "returns endpoint from url", %{bypass: bypass} do
-    Bypass.expect(bypass, &handle/1)
+    # Bypass.expect(bypass, &handle/1)
 
     assert {:error, :no_oembed_provider} ==
              Oembed.endpoint_from_url("foobar")

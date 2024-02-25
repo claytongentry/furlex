@@ -10,26 +10,31 @@ defmodule Furlex.Parser do
   the given match function
   """
   @spec extract(List.t() | String.t(), String.t(), Function.t()) :: Map.t()
-  def extract(tags, html, match) when is_list(tags) do
+  def extract(tag, html, match, extract_attr \\ "content")
+
+  def extract(tags, html, match, extract_attr) when is_list(tags) do
     tags
-    |> Stream.map(&extract(&1, html, match))
-    |> Enum.reject(fn {_, v} -> is_nil(v) end)
+    |> Stream.map(&extract(&1, html, match, extract_attr))
+    |> Enum.reject(fn
+      {_, v} -> is_nil(v)
+      nil -> true
+    end)
     |> Map.new()
     |> group_keys()
   end
 
-  def extract(tag, html, match) do
+  def extract(tag, html, match, extract_attr) do
     html
-    |> Floki.parse_document()
-    |> elem(1)
+    # |> Floki.parse_document()
+    # |> elem(1)
     |> Floki.find(match.(tag))
     |> case do
-      nil ->
-        nil
+      nil -> nil
+      [] -> nil
 
       elements ->
         content =
-          case do_extract_content(elements) do
+          case do_extract_content(elements, extract_attr) do
             [] -> nil
             [element] -> element
             content -> content
@@ -43,8 +48,8 @@ defmodule Furlex.Parser do
   @spec extract_canonical(String.t()) :: nil | String.t()
   def extract_canonical(html) do
     html
-    |> Floki.parse_document()
-    |> elem(1)
+    # |> Floki.parse_document()
+    # |> elem(1)
     |> Floki.find("link[rel=\"canonical\"]")
     |> case do
       [] ->
@@ -115,10 +120,11 @@ defmodule Furlex.Parser do
     right
   end
 
-  defp do_extract_content(elements) do
-    Enum.map(elements, fn element ->
+  defp do_extract_content(elements, extract_attr) do
+    elements
+    |> Enum.map(fn element ->
       element
-      |> Floki.attribute("content")
+      |> Floki.attribute(extract_attr)
       |> Enum.at(0)
     end)
   end

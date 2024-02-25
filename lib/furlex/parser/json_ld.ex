@@ -8,8 +8,8 @@ defmodule Furlex.Parser.JsonLD do
     meta = "script[type=\"application/ld+json\"]"
 
     html
-    |> Floki.parse_document()
-    |> elem(1)
+    # |> Floki.parse_document()
+    # |> elem(1)
     |> Floki.find(meta)
     |> case do
       nil ->
@@ -20,6 +20,7 @@ defmodule Furlex.Parser.JsonLD do
           elements
           |> Enum.map(&decode/1)
           |> List.flatten()
+          |> Enum.uniq()
 
         {:ok, json_ld}
     end
