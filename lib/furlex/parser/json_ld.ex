@@ -4,7 +4,7 @@ defmodule Furlex.Parser.JsonLD do
   @json_library Application.get_env(:furlex, :json_library, Jason)
 
   @spec parse(String.t()) :: nil | {:ok, List.t()}
-  def parse(html) do
+  def parse(html, _opts \\ []) do
     meta = "script[type=\"application/ld+json\"]"
 
     html

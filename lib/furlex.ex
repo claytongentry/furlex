@@ -10,7 +10,7 @@ defmodule Furlex do
   import Untangle
 
   alias Furlex.{Fetcher, Parser, Oembed}
-  alias Furlex.Parser.{Facebook, HTML, JsonLD, Twitter}
+  alias Furlex.Parser.{Facebook, HTML, JsonLD, Twitter, RelMe}
 
   @doc false
   def start(_type, _args) do
@@ -47,8 +47,11 @@ defmodule Furlex do
 
   def unfurl_html(url, body, extra, opts \\ []) do
     with {:ok, body} <- Floki.parse_document(body),
-         {:ok, results} <- parse(body),
-         canonical_url <- Parser.extract_canonical(body) do
+        canonical_url <- Parser.extract_canonical(body),
+         {:ok, results} <- parse(
+          body, 
+          opts #++ [urls: [url, canonical_url]]
+         ) do
       {:ok,
       extra
       |> Map.merge(results || %{})
@@ -90,21 +93,23 @@ defmodule Furlex do
     end
   end
 
-  defp parse(body) do
-    parse = &Task.async(&1, :parse, [body])
-    tasks = Enum.map([Facebook, Twitter, JsonLD, HTML], parse)
+  defp parse(body, opts) do
+    parse = &Task.async(&1, :parse, [body, opts])
+    tasks = Enum.map([Facebook, Twitter, JsonLD, RelMe, HTML], parse)
 
-    with [facebook, twitter, json_ld, other] <- Task.yield_many(tasks),
+    with [facebook, twitter, json_ld, rel_me, other] <- Task.yield_many(tasks),
          {_facebook, {:ok, {:ok, facebook}}} <- facebook,
          {_twitter, {:ok, {:ok, twitter}}} <- twitter,
          {_json_ld, {:ok, {:ok, json_ld}}} <- json_ld,
+         {_rel_me, {:ok, {:ok, rel_me}}} <- rel_me,
          {_other, {:ok, {:ok, other}}} <- other do
       {:ok,
        %{
          facebook: facebook,
          twitter: twitter,
          json_ld: json_ld,
-         other: other
+         other: other,
+         rel_me: rel_me
        }}
     else
       _ -> {:error, :parse_error}

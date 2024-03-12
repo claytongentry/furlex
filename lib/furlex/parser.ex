@@ -20,7 +20,7 @@ defmodule Furlex.Parser do
       nil -> true
     end)
     |> Map.new()
-    |> group_keys()
+    |> maybe_group_keys()
   end
 
   def extract(tag, html, match, extract_attr) do
@@ -68,11 +68,11 @@ defmodule Furlex.Parser do
   ## Examples
 
     iex> Application.put_env(:furlex, :group_keys?, false)
-    iex> Furlex.Parser.group_keys %{"twitter:app:id" => 123, "twitter:app:name" => "YouTube"}
+    iex> Furlex.Parser.maybe_group_keys %{"twitter:app:id" => 123, "twitter:app:name" => "YouTube"}
     %{"twitter:app:id" => 123, "twitter:app:name" => "YouTube"}
 
     iex> Application.put_env(:furlex, :group_keys?, true)
-    iex> Furlex.Parser.group_keys %{"twitter:app:id" => 123, "twitter:app:name" => "YouTube"}
+    iex> Furlex.Parser.maybe_group_keys %{"twitter:app:id" => 123, "twitter:app:name" => "YouTube"}
     %{
       "twitter" => %{
         "app" => %{
@@ -82,18 +82,22 @@ defmodule Furlex.Parser do
       }
     }
   """
-  @spec group_keys(Map.t()) :: Map.t()
-  def group_keys(map)
+  @spec maybe_group_keys(Map.t()) :: Map.t()
+  def maybe_group_keys(map)
 
-  def group_keys(map) do
-    if Application.get_env(:furlex, :group_keys?) do
-      Enum.reduce(map, %{}, fn
-        {_, v}, _acc when is_map(v) -> group_keys(v)
-        {k, v}, acc -> do_group_keys(k, v, acc)
-      end)
+  def maybe_group_keys(map) do
+    if Application.get_env(:furlex, :group_keys?, true) do
+      do_group_keys(map)
     else
       map
     end
+  end
+
+  defp do_group_keys(map) do
+    Enum.reduce(map, %{}, fn
+        {_, v}, _acc when is_map(v) -> do_group_keys(v)
+        {k, v}, acc -> do_group_keys(k, v, acc)
+      end)
   end
 
   defp do_group_keys(key, value, acc) do

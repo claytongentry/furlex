@@ -14,11 +14,11 @@ defmodule Furlex.Parser.Twitter do
   )
 
   @spec parse(String.t()) :: {:ok, Map.t()}
-  def parse(html) do
+  def parse(html, _opts \\ []) do
     meta = &"meta[name=\"#{&1}\"]"
     map = Parser.extract(tags(), html, meta)
 
-    {:ok, map}
+    {:ok, Map.merge(map, Map.get(map, "twitter", %{})) |> Map.drop(["twitter"])}
   end
 
   @doc false

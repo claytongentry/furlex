@@ -4,7 +4,7 @@ defmodule Furlex.Parser.HTML do
   alias Furlex.Parser.{Facebook, Twitter}
 
   @spec parse(String.t()) :: nil | {:ok, Map.t()}
-  def parse(html) do
+  def parse(html, _opts \\ []) do
     result = get_title(html)
 
     html

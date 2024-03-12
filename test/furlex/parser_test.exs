@@ -37,7 +37,7 @@ defmodule Furlex.ParserTest do
       "twitter:card" => "player"
     }
 
-    result = Parser.group_keys(map)
+    result = Parser.maybe_group_keys(map)
 
     assert result == %{
              "twitter" => %{

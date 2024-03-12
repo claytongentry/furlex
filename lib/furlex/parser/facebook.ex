@@ -28,11 +28,11 @@ defmodule Furlex.Parser.Facebook do
   )
 
   @spec parse(String.t()) :: {:ok, Map.t()}
-  def parse(html) do
+  def parse(html, _opts \\ []) do
     meta = &"meta[property=\"#{&1}\"]"
     map = Parser.extract(tags(), html, meta)
 
-    {:ok, map}
+    {:ok, Map.merge(map, Map.get(map, "og", %{})) |> Map.drop(["og"]) }
   end
 
   def tags do
